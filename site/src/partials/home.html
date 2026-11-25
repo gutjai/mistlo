@@ -1,48 +1,69 @@
-<section class="hero" id="product">
-  <div class="hero-copy">
-    <p class="eyebrow"><span class="dot"></span> {{heroEyebrow}}</p>
-    <h1>{{tagline}}</h1>
-    <!-- COPY: home hero description -->
+<section class="hero full" id="product">
+  <img class="hero-media" src="{{root}}assets/photos/hero-night.jpg" width="2400" height="1350" fetchpriority="high" alt="Mistlo rain cloud lamp glowing amber on a walnut nightstand in a dark bedroom, drops falling into its basin">
+  <div class="hero-inner wrap">
+    <h1><span class="h1-name">{{productName}} rain cloud humidifier &amp; night light</span><span class="h1-line">{{tagline}}</span></h1>
     {{heroDescription}}
-    <div class="hero-actions">{{buy:hero}} <a href="#how-it-works" class="text-link">See how it works <span aria-hidden="true">↓</span></a></div>
+    <div class="hero-actions">{{buy:hero}}<a href="#how-it-works" class="text-link">See how it rains</a></div>
     <p class="micro">{{heroDetails}}</p>
   </div>
-  <figure class="hero-art">
-    <img src="{{root}}assets/cloud.svg" width="800" height="740" fetchpriority="high" alt="Cream rain-cloud humidifier with a warm glow and droplets falling into its base">
-    <figcaption><span>THE RAIN COLLECTION</span><span>01 / WARM IVORY</span></figcaption>
-  </figure>
 </section>
-<section class="features" aria-label="Product features">
-  <!-- COPY: feature names and descriptions -->
+
+<section class="rows" aria-label="Product features">
   {{features}}
 </section>
-<section class="story" id="how-it-works">
-  <img loading="lazy" width="800" height="740" src="{{root}}assets/cloud-night.svg" alt="Rain-cloud humidifier glowing on a dark green background">
-  <div>
-    <p class="eyebrow">How it works</p>
-    <!-- COPY: how it works section -->
+
+<section class="glow full" id="light" aria-labelledby="glow-title">
+  <div class="glow-inner wrap">
+    <div class="glow-copy">
+      <h2 id="glow-title">Pick the weather. Pick the glow.</h2>
+      <p>Seven colors and a slow cycle, three brightness levels. Mistlo remembers the last one you chose, and the light runs on its own even with an empty tank.</p>
+      <fieldset class="swatches">
+        <legend>Try a color</legend>
+        {{swatches}}
+      </fieldset>
+      <p class="swatch-name" aria-live="polite"><span data-glow-name>Warm Amber</span></p>
+    </div>
+    <figure class="glow-figure" style="--glow:#f3b467">
+      <img loading="lazy" src="{{root}}assets/photos/glow-studio.jpg" width="1600" height="1600" alt="Mistlo lit up on a dark background, rain falling into the basin">
+      <span class="glow-tint" aria-hidden="true"></span>
+    </figure>
+  </div>
+</section>
+
+<section class="how" id="how-it-works">
+  <figure class="how-media"><img loading="lazy" src="{{root}}assets/photos/pack-shot.jpg" width="1600" height="1600" alt="Mistlo in Warm Ivory on a pale grey background"></figure>
+  <div class="how-copy">
     <h2>{{storyTitle}}</h2>
     {{storySteps}}
   </div>
 </section>
-<section class="details" id="specs">
-  <div><p class="eyebrow">The details</p><h2>Room for rain.</h2></div>
-  <!-- COPY: product specifications -->
+
+<section class="box" id="in-the-box">
+  <div class="box-copy">
+    <h2>In the box</h2>
+    {{inBox}}
+    <p class="box-note">{{shipping}}</p>
+  </div>
+  <figure class="box-media"><img loading="lazy" src="{{root}}assets/photos/in-the-box.jpg" width="1600" height="1200" alt="Flat lay of Mistlo's cloud, basin, USB-C cable, felt coaster, cleaning brush and care card"></figure>
+</section>
+
+<section class="specs" id="specs">
+  <h2>Specifications</h2>
   <dl>{{specs}}</dl>
 </section>
-<section id="gallery" class="gallery">
-  <p class="eyebrow">Gallery</p><h2>From daylight to dusk.</h2>
-  <div>
-    <figure><img loading="lazy" width="800" height="740" src="{{root}}assets/cloud.svg" alt="The warm ivory finish in daylight"><figcaption>Warm ivory</figcaption></figure>
-    <figure><img loading="lazy" width="800" height="740" src="{{root}}assets/cloud-night.svg" alt="The amber night light illuminated"><figcaption>Amber light</figcaption></figure>
-    <figure><img loading="lazy" width="800" height="740" src="{{root}}assets/cloud-detail.svg" alt="Close-up of the cloud and falling droplets"><figcaption>Rainfall detail</figcaption></figure>
+
+{{guideLinks}}
+
+<section class="home-faq" id="faq">
+  <div><h2>Questions, answered.</h2><a class="text-link" href="{{root}}faq/">All questions</a></div>
+  <div>{{faqs}}</div>
+</section>
+
+<section class="closing full">
+  <div class="wrap closing-inner">
+    <h2>{{closingHeadline}}</h2>
+    {{buy:closing}}
   </div>
 </section>
-{{guideLinks}}
-<section class="home-faq" id="faq">
-  <div><p class="eyebrow">Good to know</p><h2>Questions, answered.</h2><a class="text-link" href="{{root}}faq/">See all FAQs <span aria-hidden="true">↗</span></a></div>
-  <div><!-- COPY: FAQ questions and answers live in faq.json -->{{faqs}}</div>
-</section>
-<section class="closing"><h2>{{closingHeadline}}</h2>{{buy:closing}}</section>
-<div class="sticky" aria-label="Product purchase bar"><div><span>{{productName}}</span><small>Rain-cloud humidifier &amp; night light</small></div>{{buy:sticky}}</div>
 
+<div class="sticky" aria-label="Product purchase bar" data-sticky><div><span>{{productName}}</span><small>Rain cloud humidifier &amp; night light</small></div>{{buy:sticky}}</div>

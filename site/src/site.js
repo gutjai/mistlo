@@ -126,3 +126,23 @@ document.addEventListener('click', event => {
   if (button) share(button);
   if (event.target.closest('[data-portfolio]')) count('portfolio-click', true);
 });
+
+// Glow picker: retint the studio photo and announce the color name.
+const glowFigure = document.querySelector('.glow-figure');
+const glowName = document.querySelector('[data-glow-name]');
+document.addEventListener('change', event => {
+  const input = event.target.closest('input[name="glow"]');
+  if (!input || !glowFigure) return;
+  glowFigure.style.setProperty('--glow', input.value);
+  if (glowName) glowName.textContent = input.dataset.name;
+});
+
+// Sticky buy bar appears once the hero's own Buy button has scrolled away.
+const sticky = document.querySelector('[data-sticky]');
+const heroBuy = document.querySelector('.hero [data-buy]');
+if (sticky && heroBuy && 'IntersectionObserver' in window) {
+  sticky.classList.add('is-hidden');
+  new IntersectionObserver(([entry]) => {
+    sticky.classList.toggle('is-hidden', entry.isIntersecting || entry.boundingClientRect.top > 0);
+  }).observe(heroBuy);
+}

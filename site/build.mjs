@@ -77,7 +77,7 @@ function labeled(section, label) {
 const structured = (type, props) => ({ '@type': type, ...props });
 const organization = structured('Organization', { '@id': abs('/#organization'), name: brandName, url: abs('/') });
 const description = product.data.description ? editorial(product.data.description) : productName + ' is a rain-cloud humidifier and night light with visible rainfall, cool mist and a soft amber glow.';
-const image = abs('/assets/social.jpg');
+const image = abs('/assets/photos/og.jpg');
 const routes = new Map();
 const logo = '<a class="logo" href="' + h(root) + '"><img src="' + h(root) + 'assets/icon.svg" width="28" height="28" alt="">' + h(brandName) + '</a>';
 
@@ -171,6 +171,7 @@ function pageHtml(route, page) {
 <meta name="description" content="${h(page.description)}">
 <link rel="canonical" href="${h(canonical)}">
 <link rel="icon" href="${h(root)}assets/icon.svg" type="image/svg+xml">
+<link rel="preload" href="${h(root)}assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
 ${page.noindex ? '<meta name="robots" content="noindex, follow">' : ''}
 ${verification}
 <meta property="og:type" content="${page.article ? 'article' : 'website'}">
@@ -181,12 +182,12 @@ ${verification}
 <meta property="og:image" content="${h(image)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Illustration of a rain-cloud humidifier on a muted green background">
+<meta property="og:image:alt" content="Mistlo rain cloud lamp glowing amber on a nightstand at night">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${h(socialTitle)}">
 <meta name="twitter:description" content="${h(socialDescription)}">
 <meta name="twitter:image" content="${h(image)}">
-<meta name="twitter:image:alt" content="Illustration of a rain-cloud humidifier on a muted green background">
+<meta name="twitter:image:alt" content="Mistlo rain cloud lamp glowing amber on a nightstand at night">
 <script type="application/ld+json">${schema}</script>
 <style>${styles}</style>
 <script src="${h(root)}site.js" defer></script>
@@ -202,15 +203,15 @@ ${page.buy ? dialog : ''}
 `;
 }
 
-const styles = await read(join(src, 'styles.css'));
+const styles = (await read(join(src, 'styles.css'))).replaceAll('{{root}}', root);
 const homeTemplate = await read(join(src, 'partials', 'home.html'));
 const homeHero = await copyPart('home-hero');
 const heroCopy = productSections.get('Hero');
 const homeFaq = faqItems.slice(0, 4);
-const featureCopy = namedSections(productSections.get('Features') ?? '', 3).slice(0, 3);
+const featureCopy = namedSections(productSections.get('Features') ?? '', 3);
 const specs = [...(productSections.get('Specs') ?? '').matchAll(/^\| ([^|]+?) \| ([^|]+?) \|\s*$/gm)];
 const featuredSpecs = new Set(['Tank', 'Rain speeds', 'Light', 'Power', 'Size', 'Finish']);
-const specHtml = specs.filter(([, label]) => featuredSpecs.has(label)).map(([, label, value]) =>
+const specHtml = specs.filter(([, label]) => label !== 'Spec' && label !== 'Product').map(([, label, value]) =>
   '<div><dt>' + h(label) + '</dt><dd>' + h(editorial(value)) + '</dd></div>').join('');
 const steps = (productSections.get('How it works') ?? '').split(/\r?\n/).filter(line => /^\d+\. /.test(line));
 const fit = productSections.get('Honest fit');
@@ -236,12 +237,20 @@ const homeParts = {
   storyTitle: h(labeled(productSections.get('How it works'), 'Headline') || 'Make it rain, indoors.'),
   specs: specHtml || '<div><dt>Finish</dt><dd>Warm ivory</dd></div><div><dt>Tank</dt><dd>300 mL</dd></div><div><dt>Power</dt><dd>USB-C</dd></div><div><dt>Footprint</dt><dd>18 × 12 cm</dd></div>',
   guideLinks,
-  features: (featureCopy.length === 3 ? featureCopy : [
-    ['Visible rainfall', 'Watch droplets fall from the cloud into the tray below.'],
-    ['A softer light', 'A warm glow for the corner you keep on after dark.'],
-    ['Cool mist', 'A gentle mist for the space around your desk or nightstand.']
-  ]).map(([title, text], index) => '<div><span class="feature-icon" aria-hidden="true">' +
-    ['≋', '☼', '◌'][index] + '</span><h2>' + h(editorial(title)) + '</h2>' + renderText(text).html + '</div>').join(''),
+  features: (() => {
+    const photos = [
+      ['rain-macro.jpg', 1200, 1500, 'Close-up of drops falling from the cloud into the basin, lit from behind'],
+      ['evening-shelf.jpg', 1600, 1200, 'Mistlo glowing lavender on a living-room shelf at dusk'],
+      ['desk-day.jpg', 1600, 1200, 'Mistlo raining on a light oak desk by a window in daylight']
+    ];
+    const rows = featureCopy.slice(0, 3).map(([title, text], i) => '<article class="row' + (i % 2 ? ' flip' : '') + '"><figure><img loading="lazy" src="' + h(root) + 'assets/photos/' + photos[i][0] + '" width="' + photos[i][1] + '" height="' + photos[i][2] + '" alt="' + h(photos[i][3]) + '"></figure><div class="row-copy"><h2>' + h(editorial(title)) + '</h2>' + renderText(text).html + '</div></article>').join('');
+    const small = featureCopy.slice(3).map(([title, text]) => '<div><h3>' + h(editorial(title)) + '</h3>' + renderText(text).html + '</div>').join('');
+    return rows + (small ? '<div class="pair">' + small + '</div>' : '');
+  })(),
+  swatches: [['Warm Amber', '#f3b467'], ['Candle', '#ffcf8a'], ['Soft White', '#f4efe6'], ['Dusk Rose', '#e9a3a8'], ['Lavender', '#b8a6e6'], ['Sea Glass', '#8fd1c0'], ['Midnight Blue', '#5f7fd6']]
+    .map(([name, hex], i) => '<label class="swatch" style="--c:' + hex + '"><input type="radio" name="glow" value="' + hex + '" data-name="' + h(name) + '"' + (i ? '' : ' checked') + '><span class="sr">' + h(name) + '</span></label>').join(''),
+  inBox: renderText(productSections.get('In the box') ?? '').html.replace('<ul>', '<ul class="box-list">'),
+  shipping: h(String(productSections.get('Shipping & returns') ?? '').trim()),
   heroDescription: (homeHero?.html ?? (labeled(heroCopy, 'Subhead') ? renderText(labeled(heroCopy, 'Subhead')).html : null))?.replace('<p>', '<p class="lede">') ?? '<p class="lede">Meet ' + h(productName) + ', a rain-cloud humidifier and night light that brings a little of the outdoors to your nightstand.</p>',
   ...Object.fromEntries(['hero', 'closing', 'sticky'].map(location => ['buy:' + location, buy(location)]))
 };
@@ -252,7 +261,7 @@ routes.set('/', {
   body: home,
   buy: true,
   schema: [structured('Product', {
-    name: productName, description, image: abs('/assets/cloud.svg'),
+    name: productName, description, image: [abs('/assets/photos/pack-shot.jpg'), abs('/assets/photos/hero-night.jpg')],
     brand: structured('Brand', { name: brandName }), url: abs('/')
   }), faqSchema(homeFaq)]
 });
