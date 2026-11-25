@@ -1,0 +1,48 @@
+<section class="hero" id="product">
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="dot"></span> {{heroEyebrow}}</p>
+    <h1>{{tagline}}</h1>
+    <!-- COPY: home hero description -->
+    {{heroDescription}}
+    <div class="hero-actions">{{buy:hero}} <a href="#how-it-works" class="text-link">See how it works <span aria-hidden="true">↓</span></a></div>
+    <p class="micro">{{heroDetails}}</p>
+  </div>
+  <figure class="hero-art">
+    <img src="{{root}}assets/cloud.svg" width="800" height="740" fetchpriority="high" alt="Cream rain-cloud humidifier with a warm glow and droplets falling into its base">
+    <figcaption><span>THE RAIN COLLECTION</span><span>01 / WARM IVORY</span></figcaption>
+  </figure>
+</section>
+<section class="features" aria-label="Product features">
+  <!-- COPY: feature names and descriptions -->
+  {{features}}
+</section>
+<section class="story" id="how-it-works">
+  <img loading="lazy" width="800" height="740" src="{{root}}assets/cloud-night.svg" alt="Rain-cloud humidifier glowing on a dark green background">
+  <div>
+    <p class="eyebrow">How it works</p>
+    <!-- COPY: how it works section -->
+    <h2>{{storyTitle}}</h2>
+    {{storySteps}}
+  </div>
+</section>
+<section class="details" id="specs">
+  <div><p class="eyebrow">The details</p><h2>Room for rain.</h2></div>
+  <!-- COPY: product specifications -->
+  <dl>{{specs}}</dl>
+</section>
+<section id="gallery" class="gallery">
+  <p class="eyebrow">Gallery</p><h2>From daylight to dusk.</h2>
+  <div>
+    <figure><img loading="lazy" width="800" height="740" src="{{root}}assets/cloud.svg" alt="The warm ivory finish in daylight"><figcaption>Warm ivory</figcaption></figure>
+    <figure><img loading="lazy" width="800" height="740" src="{{root}}assets/cloud-night.svg" alt="The amber night light illuminated"><figcaption>Amber light</figcaption></figure>
+    <figure><img loading="lazy" width="800" height="740" src="{{root}}assets/cloud-detail.svg" alt="Close-up of the cloud and falling droplets"><figcaption>Rainfall detail</figcaption></figure>
+  </div>
+</section>
+{{guideLinks}}
+<section class="home-faq" id="faq">
+  <div><p class="eyebrow">Good to know</p><h2>Questions, answered.</h2><a class="text-link" href="{{root}}faq/">See all FAQs <span aria-hidden="true">↗</span></a></div>
+  <div><!-- COPY: FAQ questions and answers live in faq.json -->{{faqs}}</div>
+</section>
+<section class="closing"><h2>{{closingHeadline}}</h2>{{buy:closing}}</section>
+<div class="sticky" aria-label="Product purchase bar"><div><span>{{productName}}</span><small>Rain-cloud humidifier &amp; night light</small></div>{{buy:sticky}}</div>
+
