@@ -1,10 +1,14 @@
-<section class="hero full" id="product">
-  <img class="hero-media" src="{{root}}assets/photos/hero-night.jpg" width="2400" height="1350" fetchpriority="high" alt="Mistlo rain cloud lamp glowing amber on a walnut nightstand in a dark bedroom, drops falling into its basin">
-  <div class="hero-inner wrap">
-    <h1><span class="h1-name">{{productName}} rain cloud humidifier &amp; night light</span><span class="h1-line">{{tagline}}</span></h1>
-    {{heroDescription}}
-    <div class="hero-actions">{{buy:hero}}<a href="#how-it-works" class="text-link">See how it rains</a></div>
-    <p class="micro">{{heroDetails}}</p>
+<link rel="stylesheet" href="{{root}}demo/mistlo-demo.css">
+<section class="stage full" id="product" aria-labelledby="stage-title">
+  <div class="stage-grid wrap">
+    <div class="stage-copy">
+      <h1 id="stage-title"><span class="h1-name">{{productName}} rain cloud humidifier &amp; night light</span><span class="h1-line">{{tagline}}</span></h1>
+      {{heroDescription}}
+      <div class="hero-actions">{{buy:hero}}<a href="#how-it-works" class="text-link">See how it rains</a></div>
+      <p class="micro">{{heroDetails}}</p>
+    </div>
+    <div class="stage-demo" data-mistlo-demo data-buy-context></div>
+    <p class="stage-hint">Try it: pick a rain speed and a color, or tap the cloud.</p>
   </div>
 </section>
 
@@ -12,28 +16,22 @@
   {{features}}
 </section>
 
-<section class="glow full" id="light" aria-labelledby="glow-title">
-  <div class="glow-inner wrap">
-    <div class="glow-copy">
-      <h2 id="glow-title">Pick the weather. Pick the glow.</h2>
-      <p>Seven colors and a slow cycle, three brightness levels. Mistlo remembers the last one you chose, and the light runs on its own even with an empty tank.</p>
-      <fieldset class="swatches">
-        <legend>Try a color</legend>
-        {{swatches}}
-      </fieldset>
-      <p class="swatch-name" aria-live="polite"><span data-glow-name>Warm Amber</span></p>
-    </div>
-    <figure class="glow-figure" style="--glow:#f3b467">
-      <img loading="lazy" src="{{root}}assets/photos/glow-studio.jpg" width="1600" height="1600" alt="Mistlo lit up on a dark background, rain falling into the basin">
-      <span class="glow-tint" aria-hidden="true"></span>
+<section class="anatomy" id="how-it-works" aria-labelledby="anatomy-title">
+  <div class="anatomy-sticky">
+    <figure class="anatomy-media">
+      <img loading="lazy" src="{{root}}assets/photos/pack-shot.jpg" width="1600" height="1600" alt="Mistlo in Warm Ivory on a pale grey background, showing the four buttons on the base">
+      <svg class="anatomy-path" viewBox="0 0 1600 1600" aria-hidden="true">
+        <path class="flow up" d="M1012 1075 L1012 705" />
+        <path class="flow across" d="M1012 700 C 900 690, 760 690, 640 694" />
+        <g class="flow drops">
+          <line x1="560" y1="720" x2="560" y2="1060" /><line x1="680" y1="720" x2="680" y2="1060" /><line x1="800" y1="720" x2="800" y2="1060" />
+        </g>
+        <circle class="node pump" cx="1012" cy="1110" r="16" />
+      </svg>
     </figure>
   </div>
-</section>
-
-<section class="how" id="how-it-works">
-  <figure class="how-media"><img loading="lazy" src="{{root}}assets/photos/pack-shot.jpg" width="1600" height="1600" alt="Mistlo in Warm Ivory on a pale grey background"></figure>
-  <div class="how-copy">
-    <h2>{{storyTitle}}</h2>
+  <div class="anatomy-steps">
+    <h2 id="anatomy-title">{{storyTitle}}</h2>
     {{storySteps}}
   </div>
 </section>
@@ -44,7 +42,7 @@
     {{inBox}}
     <p class="box-note">{{shipping}}</p>
   </div>
-  <figure class="box-media"><img loading="lazy" src="{{root}}assets/photos/in-the-box.jpg" width="1600" height="1200" alt="Flat lay of Mistlo's cloud, basin, USB-C cable, felt coaster, cleaning brush and care card"></figure>
+  <figure class="box-media"><img loading="lazy" src="{{root}}assets/photos/in-the-box.jpg" width="1600" height="1200" alt="Flat lay of Mistlo's cloud, stem, basin, USB-C cable, felt coaster, cleaning brush and care card"></figure>
 </section>
 
 <section class="specs" id="specs">
@@ -66,4 +64,12 @@
   </div>
 </section>
 
-<div class="sticky" aria-label="Product purchase bar" data-sticky><div><span>{{productName}}</span><small>Rain cloud humidifier &amp; night light</small></div>{{buy:sticky}}</div>
+<div class="sticky" aria-label="Product purchase bar" data-sticky>
+  <span class="sticky-swatch" aria-hidden="true"></span>
+  <div><span>{{productName}}</span><small data-sticky-state>Warm Amber · Steady rain</small></div>
+  {{buy:sticky}}
+</div>
+<script type="module">
+  import { mountAllMistloDemos } from '{{root}}demo/mistlo-demo.js';
+  mountAllMistloDemos();
+</script>

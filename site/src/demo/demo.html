@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Mistlo Live Demo</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./mistlo-demo.css">
+  <style>
+    body { margin: 0; background: #0e0d0c; color: #f5f2ee; }
+    main { max-width: 1200px; margin-inline: auto; padding: clamp(12px, 4vw, 56px); }
+  </style>
+</head>
+<body>
+  <main>
+    <div data-mistlo-demo></div>
+    <noscript>The Mistlo demo requires JavaScript.</noscript>
+  </main>
+  <script type="module">
+    import { mountAllMistloDemos } from './mistlo-demo.js';
+    mountAllMistloDemos();
+  </script>
+</body>
+</html>

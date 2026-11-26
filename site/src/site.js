@@ -97,7 +97,7 @@ if (dialog) {
 
 async function share(button) {
   count('share-click', true);
-  const copy = button.closest('.reveal-copy');
+  const copy = button.closest('.pitch');
   const status = copy.querySelector('.share-status');
   const manual = copy.querySelector('.manual-share');
   // Share the storefront (not the reveal) so friends get the same surprise; ?ref=share shows up in GoatCounter.
@@ -139,10 +139,27 @@ document.addEventListener('change', event => {
 
 // Sticky buy bar appears once the hero's own Buy button has scrolled away.
 const sticky = document.querySelector('[data-sticky]');
-const heroBuy = document.querySelector('.hero [data-buy]');
+const heroBuy = document.querySelector('.stage [data-buy]');
 if (sticky && heroBuy && 'IntersectionObserver' in window) {
   sticky.classList.add('is-hidden');
   new IntersectionObserver(([entry]) => {
     sticky.classList.toggle('is-hidden', entry.isIntersecting || entry.boundingClientRect.top > 0);
   }).observe(heroBuy);
 }
+
+// Live demo: mirror the visitor's choices in the buy bar and count deliberate interactions.
+const demoState = { name: 'Warm Amber', hex: '#f3b467', mode: 'steady' };
+const stickyState = document.querySelector('[data-sticky-state]');
+const modeLabel = { drizzle: 'Drizzle', steady: 'Steady rain', pour: 'Pour' };
+function renderDemoState() {
+  if (stickyState) stickyState.textContent = demoState.name + ' · ' + modeLabel[demoState.mode];
+  if (sticky) sticky.style.setProperty('--sticky-glow', demoState.hex);
+}
+const counted = new Set();
+function countOnce(name) { if (!counted.has(name)) { counted.add(name); count(name, true); } }
+document.addEventListener('mistlo:mode', event => { demoState.mode = event.detail.mode; renderDemoState(); countOnce('demo-mode'); });
+document.addEventListener('mistlo:color', event => {
+  demoState.name = event.detail.name; demoState.hex = event.detail.hex; renderDemoState();
+  if (event.detail.source === 'manual') countOnce('demo-color');
+});
+document.addEventListener('mistlo:sound', event => { if (event.detail.enabled) countOnce('demo-sound'); });

@@ -127,22 +127,25 @@ const revealMessage = revealCopy?.headings.some(heading => heading.level === 1)
     : expand(await read(join(src, 'partials', 'reveal.html')), substitutions, h);
 const hasVideo = (await readdir(join(src, 'assets', 'reveal'))).includes('reveal.mp4');
 function reveal(directPage = false) {
-  const message = revealPart.data.headline && revealPart.data.line1
-    ? '<p class="eyebrow">' + h(editorial(revealPart.data.eyebrow || 'The reveal')) + '</p><h1 id="reveal-title">' +
-      h(editorial(revealPart.data.headline)) + '</h1><p class="lede">' + h(editorial(revealPart.data.line1)) + '</p>' +
-      '<p>The site collects no checkout details or payments. GoatCounter measures aggregate visits and clicks without cookies.</p>' +
-      (!directPage && revealPart.data.line3 ? '<p>' + h(editorial(revealPart.data.line3)) + '</p>' : '')
-    : revealMessage;
+  const d = revealPart.data;
+  const t = key => h(editorial(String(d[key] || '')));
   const poster = h(root) + 'assets/reveal/face.jpg';
   const media = hasVideo
     ? '<video controls playsinline preload="none" poster="' + poster + '" aria-label="Reveal video from ' + h(ownerName) + '"><source src="' + h(root) + 'assets/reveal/reveal.mp4" type="video/mp4"></video>'
-    : '<img src="' + poster + '" alt="" width="800" height="800">';
-  return '<div class="reveal-layout"><div class="reveal-media">' + media + '</div><div class="reveal-copy">' +
-    message + '<div class="reveal-actions"><button class="button" type="button" data-share data-share-text="' +
-    h(editorial(String(revealPart.data.shareWhatsApp || 'Try to buy the little rain cloud lamp and see what happens:').replace(/\s*\{\{siteUrl\}\}\s*/g, ' ').trim())) +
-    '" hidden>' + h(editorial(revealPart.data.shareButton || 'Share the reveal')) + '</button>' +
-    '<a class="button secondary" href="' + h(root) + 'about/">' + h(editorial(revealPart.data.buildButton || 'How this was built')) + '</a>' + contactLink() +
-    '</div><p class="share-status" role="status"></p><p class="manual-share" hidden><a href="' + h(root) + 'gotcha/">Open the reveal link to share it</a></p></div></div>';
+    : '<img src="' + poster + '" alt="Gavin, who built this store" width="800" height="800">';
+  const offer = n => '<article class="offer"><h3>' + t('offer' + n + 'Title') + '</h3><p>' + t('offer' + n + 'Text') + '</p><ul>' +
+    String(d['offer' + n + 'Items'] || '').split('|').filter(Boolean).map(item => '<li>' + h(editorial(item)) + '</li>').join('') + '</ul></article>';
+  const shareText = h(editorial(String(d.shareWhatsApp || '').replace(/\s*\{\{siteUrl\}\}\s*/g, ' ').trim()));
+  const contactHref = h(contact || root + 'about/');
+  return '<div class="reveal-wrap">' +
+    '<div class="reveal-layout"><div class="reveal-media">' + media + '</div><div class="reveal-copy">' +
+    '<h1 id="reveal-title">' + t('headline') + '</h1><p class="lede">' + t('line1') + '</p><p class="reveal-small">' + t('line2') + '</p></div></div>' +
+    '<section class="pitch" aria-labelledby="pitch-title"><h2 id="pitch-title">' + t('pitchHeadline') + '</h2><p class="pitch-intro">' + t('pitchIntro') + '</p>' +
+    '<div class="offers">' + offer(1) + offer(2) + '</div>' +
+    '<div class="reveal-actions"><a class="button primary-cta" href="' + contactHref + '"' + (contact ? ' data-portfolio rel="noopener" target="_blank"' : '') + '>' + t('contactButton') + '</a>' +
+    '<a class="button secondary" href="' + h(root) + 'about/">' + t('buildButton') + '</a>' +
+    '<button class="button secondary" type="button" data-share data-share-text="' + shareText + '" hidden>' + t('shareButton') + '</button></div>' +
+    '<p class="share-status" role="status"></p><p class="manual-share" hidden><a href="' + h(root) + '">Copy this link to share the store</a></p></section></div>';
 }
 
 const dialog = '<dialog aria-labelledby="reveal-title" id="reveal-dialog"><button type="button" class="button secondary dialog-close" data-close autofocus>Close <span aria-hidden="true">×</span></button>' +
@@ -407,6 +410,8 @@ await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 await cp(join(src, 'assets'), join(dist, 'assets'), { recursive: true, filter: file => !file.endsWith('README.md') });
 await cp(join(src, 'site.js'), join(dist, 'site.js'));
+await mkdir(join(dist, 'demo'), { recursive: true });
+for (const file of ['mistlo-demo.js', 'mistlo-demo.css']) await cp(join(src, 'demo', file), join(dist, 'demo', file));
 for (const [route, data] of routes) {
   const file = join(dist, route.slice(1), route.endsWith('/') ? 'index.html' : '');
   await mkdir(dirname(file), { recursive: true });

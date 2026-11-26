@@ -1,0 +1,294 @@
+.mistlo-demo {
+  --md-light: #f3b467;
+  --md-text: #f5f2ee;
+  --md-muted: #b1aba3;
+  --md-line: #383531;
+  --md-dim: .16;
+  --md-spill: .5;
+  --md-ink: .8;
+  container: mistlo / inline-size;
+  color-scheme: dark;
+  font: 400 1rem/1.5 system-ui, sans-serif;
+  color: var(--md-text);
+}
+
+.mistlo-demo[data-brightness="low"] { --md-dim: .44; --md-spill: .23; --md-ink: .95; }
+.mistlo-demo[data-brightness="high"] { --md-dim: 0; --md-spill: .76; --md-ink: .73; }
+
+.mistlo-demo *, .mistlo-demo *::before, .mistlo-demo *::after { box-sizing: border-box; }
+
+.mistlo-demo .md-layout {
+  display: grid;
+  overflow: hidden;
+  background: #141312;
+  border: 1px solid #312e2a;
+  border-radius: 24px;
+}
+
+.mistlo-demo .md-scene {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #141414;
+}
+
+.mistlo-demo :is(.md-photo, .md-backdrop, .md-lights, .md-canvas) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.mistlo-demo .md-photo { display: block; max-width: none; }
+.mistlo-demo .md-canvas { transform: translateZ(0); }
+
+.mistlo-demo .md-backdrop::before,
+.mistlo-demo .md-backdrop::after,
+.mistlo-demo .md-lights::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+
+.mistlo-demo .md-backdrop::before {
+  /* Fade the studio photo's frozen rain into the dark backdrop below the light strip. */
+  clip-path: polygon(36% 44%, 40% 44.15%, 46% 44.46%, 54% 44.66%, 61.25% 44.85%,
+    61.6% 65%, 59% 64.78%, 55% 64.52%, 53% 64.42%, 46% 64.42%,
+    43% 64.52%, 41% 64.63%, 38.75% 64.86%, 36% 65.27%);
+  background: linear-gradient(#1b1917 44%, #131313 46%, #121212 62%, #161616 66%);
+  mask-image: linear-gradient(90deg, transparent 36%, #000 39.7%, #000 59.45%, transparent 61.6%);
+}
+
+.mistlo-demo .md-backdrop::after {
+  background: radial-gradient(ellipse 17% 22% at 55% 0%, #181818 0 50%, transparent 100%);
+}
+
+.mistlo-demo .md-lights > div {
+  position: absolute;
+  inset: 0;
+  transition: opacity 600ms ease, background-color 600ms ease;
+}
+
+.mistlo-demo :is(.md-rim, .md-basin) {
+  background-color: var(--md-light);
+  mix-blend-mode: multiply;
+  opacity: var(--md-ink);
+}
+
+.mistlo-demo .md-rim {
+  clip-path: polygon(25.9% 42.55%, 29.1% 43%, 36.5% 43.15%, 41% 43.5%, 50% 43.82%,
+    60% 44.05%, 67.4% 44.07%, 73.65% 43.54%, 73.05% 44.48%, 68.6% 44.96%,
+    60.4% 45.13%, 50.1% 44.86%, 41.1% 44.54%, 36.4% 44.15%, 29% 44%, 26.7% 43.65%);
+}
+
+.mistlo-demo .md-basin {
+  mask-image: radial-gradient(ellipse 32% 14% at 50% 75%, #000 28%, #000d 66%, transparent 100%);
+}
+
+.mistlo-demo .md-spill {
+  background-color: var(--md-light);
+  mask-image: radial-gradient(ellipse 29% 13% at 50% 84%, #0006, transparent 94%),
+    radial-gradient(ellipse 36% 10% at 50% 88%, #0005, transparent 92%),
+    radial-gradient(ellipse 26% 4.6% at 50% 44%, #0006, transparent 93%),
+    radial-gradient(ellipse 19% 9% at 50% 69%, #0004, transparent 100%);
+  mix-blend-mode: screen;
+  opacity: var(--md-spill);
+}
+
+.mistlo-demo .md-lights::after {
+  background: radial-gradient(ellipse 42% 19% at 50% 74%, #000 15%, transparent),
+    radial-gradient(ellipse 27% 4% at 50% 44%, #000, transparent 95%);
+  opacity: var(--md-dim);
+  transition: opacity 600ms ease;
+}
+
+.mistlo-demo [data-intro="waiting"] .md-lights::after { opacity: .68; }
+.mistlo-demo [data-intro="playing"] .md-lights::after { animation: md-light-up 1.5s ease-out; }
+@keyframes md-light-up {
+  from { opacity: .68; }
+  to { opacity: var(--md-dim); }
+}
+
+.mistlo-demo .md-cloud {
+  position: absolute;
+  inset: 17.4% auto auto 23.4%;
+  width: 52.2%;
+  height: 27.3%;
+  border: 0;
+  border-radius: 52% 48% 12% 12% / 84% 84% 16% 16%;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mistlo-demo .md-cloud:disabled { pointer-events: none; }
+
+.mistlo-demo .md-panel {
+  display: grid;
+  align-content: center;
+  gap: 22px;
+  min-width: 0;
+  padding: clamp(14px, 5cqi, 32px);
+  border-top: 1px solid #312e2a;
+  background: radial-gradient(ellipse 120% 100% at 0 0, #211d19, #141312 65%);
+}
+
+.mistlo-demo .md-header { margin: 0; }
+.mistlo-demo .md-product { color: #ebbd8a; font-size: .82rem; font-weight: 650; letter-spacing: .06em; }
+.mistlo-demo .md-header h2 {
+  margin: 4px 0 8px;
+  color: var(--md-text);
+  font: 520 clamp(2rem, 6cqi, 3.6rem)/1.03 system-ui, sans-serif;
+  letter-spacing: -.065em;
+}
+.mistlo-demo .md-header p { margin: 0; color: var(--md-muted); font-size: .9rem; }
+.mistlo-demo .md-field { min-width: 0; margin: 0; padding: 0; border: 0; }
+.mistlo-demo .md-field legend { padding: 0; margin-bottom: 7px; color: var(--md-text); font-size: .82rem; font-weight: 620; }
+.mistlo-demo .md-options { display: grid; grid-template-columns: repeat(3, minmax(44px, 1fr)); }
+.mistlo-demo :is(.md-mode, .md-brightness) {
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--md-line);
+  border-radius: 12px;
+  background: #11100f;
+}
+
+.mistlo-demo .md-options label {
+  position: relative;
+  display: grid;
+  min-width: 44px;
+  min-height: 44px;
+  place-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.mistlo-demo .md-options label > span:first-of-type {
+  display: grid;
+  place-items: center;
+  color: var(--md-muted);
+  font-size: .82rem;
+}
+
+.mistlo-demo :is(.md-mode, .md-brightness) label > span { position: absolute; inset: 0; border-radius: inherit; }
+.mistlo-demo :is(.md-mode, .md-brightness) input:checked + span {
+  background: #37312a;
+  box-shadow: inset 0 0 0 1px #675642;
+  color: #ffecd7;
+}
+
+.mistlo-demo .md-options input,
+.mistlo-demo .md-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  margin: -1px;
+  padding: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.mistlo-demo .md-color {
+  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+  margin-inline: -3px;
+}
+
+.mistlo-demo .md-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--md-swatch);
+  box-shadow: inset 0 0 0 1px #fff3;
+}
+
+.mistlo-demo input:checked + .md-swatch {
+  outline: 1px solid var(--md-swatch);
+  outline-offset: 4px;
+}
+
+.mistlo-demo :is(.md-color-footer, .md-sound-row) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mistlo-demo .md-color-name { color: var(--md-muted); font-size: .82rem; }
+.mistlo-demo .md-sound-row { border-top: 1px solid var(--md-line); padding-top: 3px; }
+.mistlo-demo .md-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--md-text);
+  font: 520 .82rem/1.2 system-ui, sans-serif;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.mistlo-demo .md-sound { width: 100%; padding-inline: 0 4px; }
+.mistlo-demo .md-sound-state { margin-left: auto; color: var(--md-muted); }
+.mistlo-demo .md-toggle:disabled { color: var(--md-muted); cursor: default; }
+
+.mistlo-demo .md-switch {
+  display: flex;
+  align-items: center;
+  width: 34px;
+  height: 19px;
+  padding: 2px;
+  flex: none;
+  border: 1px solid #71665b;
+  border-radius: 999px;
+  background: #2e2924;
+}
+
+.mistlo-demo .md-switch::before {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #c5bab0;
+  transition: transform 160ms ease;
+  content: "";
+}
+
+.mistlo-demo .md-toggle[aria-pressed="true"] .md-switch { border-color: #ad7e51; background: #61472f; }
+.mistlo-demo .md-toggle[aria-pressed="true"] .md-switch::before { transform: translateX(14px); background: #ffddb7; }
+
+.mistlo-demo :is(.md-cloud, .md-toggle):focus-visible,
+.mistlo-demo .md-options label:has(input:focus-visible) { outline: 2px solid #f7c58d; outline-offset: -2px; }
+
+@media (hover: hover) {
+  .mistlo-demo .md-options label:hover { background: #342e28; }
+  .mistlo-demo .md-toggle:not(:disabled):hover { color: #ffd8b0; }
+}
+
+@container mistlo (min-width: 760px) {
+  .mistlo-demo .md-layout { grid-template-columns: minmax(0, 1.45fr) minmax(352px, 1fr); align-items: center; }
+  .mistlo-demo .md-panel { align-self: stretch; border-top: 0; border-left: 1px solid #312e2a; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mistlo-demo .md-lights > div,
+  .mistlo-demo .md-lights::after,
+  .mistlo-demo .md-switch::before { animation: none; transition: none; }
+}
+
+@media (forced-colors: active) {
+  .mistlo-demo .md-swatch { forced-color-adjust: none; }
+  .mistlo-demo :is(.md-mode, .md-brightness) input:checked + span { border: 1px solid Highlight; color: Highlight; }
+  .mistlo-demo .md-switch::before { background: ButtonText; }
+  .mistlo-demo .md-toggle[aria-pressed="true"] .md-switch::before { background: Highlight; }
+}
