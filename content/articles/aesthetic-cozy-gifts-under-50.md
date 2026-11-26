@@ -3,6 +3,7 @@ title: "Cozy Desk & Bedside Gift Ideas Under $50"
 seoTitle: "Cozy Desk & Bedside Gift Ideas Under $50 | Mistlo"
 description: "Looking for aesthetic gifts under $50? Explore cozy desk and nightstand ideas—from warm ambient lamps and cloud diffusers to tactile desk organizers."
 slug: aesthetic-cozy-gifts-under-50
+related: are-rain-cloud-humidifiers-noisy|do-rain-cloud-humidifiers-work|rain-cloud-vs-regular-humidifier
 date: 2026-11-26
 keyword: "cozy desk accessories under 50"
 faq:

@@ -2,9 +2,19 @@
 
 const { page, root, goat } = document.body.dataset;
 const canonical = new URL(document.querySelector('link[rel="canonical"]').href);
-const revealUrl = new URL(root + 'gotcha/', location.origin);
 const dialog = document.getElementById('reveal-dialog');
 const direct = document.querySelector('[data-direct-reveal]');
+const goatOrigin = goat ? 'https://' + goat + '.goatcounter.com' : '';
+const motion = matchMedia('(prefers-reduced-motion: reduce)');
+const campaignKey = root + 'campaign';
+const query = new URLSearchParams(location.search);
+const cleanCampaign = value => /^[a-z0-9-]{1,32}$/i.test(value ?? '') ? value.toLowerCase() : '';
+let campaign = cleanCampaign(query.get('ref')) || cleanCampaign(query.get('utm_source'));
+try {
+  if (campaign) sessionStorage.setItem(campaignKey, campaign);
+  else campaign = cleanCampaign(sessionStorage.getItem(campaignKey));
+} catch {}
+
 const analyticsEnabled = Boolean(goat && location.origin === canonical.origin &&
   navigator.doNotTrack !== '1' && !navigator.globalPrivacyControl && !navigator.webdriver);
 
@@ -13,7 +23,7 @@ function count(path, event = false) {
   const params = new URLSearchParams({ p: path, rnd: String(Math.random()) });
   if (event) params.set('e', '1');
   else if (document.referrer) params.set('r', new URL(document.referrer).origin);
-  fetch('https://' + goat + '.goatcounter.com/count?' + params, {
+  fetch(goatOrigin + '/count?' + params, {
     mode: 'no-cors', credentials: 'omit', referrerPolicy: 'no-referrer', keepalive: true
   }).catch(() => {});
 }
@@ -42,14 +52,12 @@ function scheduleCompletion() {
   revealTimer = setTimeout(() => {
     completed = true;
     count('reveal-complete', true);
+    if (campaign) count('ref/' + campaign + '/reveal', true);
   }, 1000);
 }
 
 document.addEventListener('visibilitychange', scheduleCompletion);
-if (direct) {
-  direct.querySelector('[data-share]').hidden = false;
-  scheduleCompletion();
-}
+if (direct) scheduleCompletion();
 
 if (dialog) {
   const content = dialog.querySelector('.dialog-content');
@@ -65,7 +73,7 @@ if (dialog) {
   });
   dialog.addEventListener('keydown', event => {
     if (event.key !== 'Tab') return;
-    const controls = [...dialog.querySelectorAll('a[href], button, video[controls]')].filter(control => control.getClientRects().length);
+    const controls = [...dialog.querySelectorAll('a[href], button, video[controls]')].filter(control => !control.disabled && control.getClientRects().length);
     const first = controls[0];
     const last = controls.at(-1);
     if (event.shiftKey && document.activeElement === first) {
@@ -80,13 +88,14 @@ if (dialog) {
   for (const link of document.querySelectorAll('[data-buy]')) {
     link.addEventListener('click', event => {
       count('buy-click/' + link.dataset.buy, true);
+      if (campaign) count('ref/' + campaign + '/buy', true);
       if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey ||
           typeof dialog.showModal !== 'function') return;
       event.preventDefault();
       if (dialog.open) return;
       opener = link;
       content.replaceChildren(template.content.cloneNode(true));
-      content.querySelector('[data-share]').hidden = false;
+      initParty(content);
       completed = false;
       dialog.showModal();
       closeButton.focus();
@@ -97,12 +106,13 @@ if (dialog) {
 
 async function share(button) {
   count('share-click', true);
-  const copy = button.closest('.pitch');
+  const copy = button.closest('.share-control');
   const status = copy.querySelector('.share-status');
   const manual = copy.querySelector('.manual-share');
-  // Share the storefront (not the reveal) so friends get the same surprise; ?ref=share shows up in GoatCounter.
-  const shareUrl = new URL(root + '?ref=share', location.origin).href;
-  const shareData = { title: document.title, text: button.dataset.shareText || '', url: shareUrl };
+  const shareUrl = manual.querySelector('a').href;
+  const shareData = { title: 'Mistlo', text: button.dataset.shareText || '', url: shareUrl };
+  manual.hidden = true;
+  status.textContent = '';
   try {
     if (navigator.share) {
       await navigator.share(shareData);
@@ -115,35 +125,100 @@ async function share(button) {
     await navigator.clipboard.writeText((shareData.text ? shareData.text + ' ' : '') + shareUrl);
     status.textContent = 'Link copied — send it to a friend.';
   } catch {
-    status.textContent = 'Open the reveal link and copy it from the address bar.';
+    status.textContent = 'Open the storefront and copy its link from the address bar.';
     manual.hidden = false;
     manual.querySelector('a').focus();
   }
 }
 
-document.addEventListener('click', event => {
-  const button = event.target.closest('[data-share]');
-  if (button) share(button);
-  if (event.target.closest('[data-portfolio]')) count('portfolio-click', true);
+const reactionKey = root + 'reaction';
+let reaction = '';
+try { reaction = localStorage.getItem(reactionKey) || ''; } catch {}
+
+function renderReaction(scope) {
+  for (const button of scope.querySelectorAll('[data-react]')) {
+    button.disabled = false;
+    button.setAttribute('aria-pressed', String(button.dataset.react === reaction));
+    button.setAttribute('aria-disabled', String(Boolean(reaction)));
+  }
+  for (const status of scope.querySelectorAll('.reaction-status')) {
+    status.textContent = reaction ? 'Reaction locked in!' : '';
+  }
+}
+
+async function loadTotal(element) {
+  try {
+    const response = await fetch(goatOrigin + '/counter/' + encodeURIComponent(element.dataset.total) + '.json', {
+      credentials: 'omit', referrerPolicy: 'no-referrer'
+    });
+    if (!response.ok) return;
+    const { count } = await response.json();
+    if (typeof count !== 'string' || !/^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)$/.test(count)) return;
+    element.textContent = count;
+    element.hidden = false;
+    if (element.parentElement.matches('.party-counts p')) element.parentElement.hidden = false;
+  } catch {}
+}
+
+function initParty(scope) {
+  for (const button of scope.querySelectorAll('[data-share]')) button.hidden = false;
+  renderReaction(scope);
+  if (goatOrigin) {
+    for (const element of scope.querySelectorAll('[data-total]')) void loadTotal(element);
+  }
+}
+
+function celebrate(button) {
+  if (motion.matches) return;
+  button.animate([{ scale: '1' }, { scale: '1.13', offset: .38 }, { scale: '1' }], 360);
+  const burst = document.createElement('span');
+  burst.className = 'confetti';
+  burst.setAttribute('aria-hidden', 'true');
+  button.append(burst);
+  for (let i = 0; i < 12; i++) {
+    const piece = document.createElement('i');
+    const angle = i * Math.PI / 6;
+    piece.style.setProperty('--x', Math.round(Math.cos(angle) * 66) + 'px');
+    piece.style.setProperty('--y', Math.round(Math.sin(angle) * 66) + 'px');
+    piece.style.setProperty('--hue', String(i * 31));
+    burst.append(piece);
+  }
+  setTimeout(() => burst.remove(), 700);
+}
+
+initParty(document);
+window.addEventListener('storage', event => {
+  if (event.key !== reactionKey) return;
+  reaction = event.newValue || '';
+  renderReaction(document);
 });
 
-// Glow picker: retint the studio photo and announce the color name.
-const glowFigure = document.querySelector('.glow-figure');
-const glowName = document.querySelector('[data-glow-name]');
-document.addEventListener('change', event => {
-  const input = event.target.closest('input[name="glow"]');
-  if (!input || !glowFigure) return;
-  glowFigure.style.setProperty('--glow', input.value);
-  if (glowName) glowName.textContent = input.dataset.name;
+document.addEventListener('click', event => {
+  const button = event.target.closest('[data-share]');
+  if (button) void share(button);
+  if (event.target.closest('[data-portfolio]')) count('portfolio-click', true);
+  const reactionButton = event.target.closest('[data-react]');
+  if (!reactionButton || reaction) return;
+  try { reaction = localStorage.getItem(reactionKey) || ''; } catch {}
+  if (!reaction) {
+    reaction = reactionButton.dataset.react;
+    try { localStorage.setItem(reactionKey, reaction); } catch {}
+    count('react/' + reaction, true);
+    celebrate(reactionButton);
+  }
+  renderReaction(document);
 });
 
 // Sticky buy bar appears once the hero's own Buy button has scrolled away.
 const sticky = document.querySelector('[data-sticky]');
 const heroBuy = document.querySelector('.stage [data-buy]');
 if (sticky && heroBuy && 'IntersectionObserver' in window) {
-  sticky.classList.add('is-hidden');
   new IntersectionObserver(([entry]) => {
-    sticky.classList.toggle('is-hidden', entry.isIntersecting || entry.boundingClientRect.top > 0);
+    const hidden = entry.isIntersecting || entry.boundingClientRect.top > 0;
+    if (hidden && sticky.contains(document.activeElement)) heroBuy.focus({ preventScroll: true });
+    sticky.classList.toggle('is-hidden', hidden);
+    sticky.inert = hidden;
+    sticky.setAttribute('aria-hidden', String(hidden));
   }).observe(heroBuy);
 }
 

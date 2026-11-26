@@ -3,6 +3,7 @@ title: "Distilled Water and Essential Oils in Rain Cloud Humidifiers"
 seoTitle: "Distilled Water & Essential Oils in Cloud Humidifiers"
 description: "Can you use tap water or essential oils in a rain cloud humidifier? See how minerals clog drip holes, which oils harm plastic, and safer habits."
 slug: distilled-water-and-essential-oils
+related: how-to-clean-rain-cloud-humidifier|rain-cloud-humidifier-not-dripping-fix|do-rain-cloud-humidifiers-work
 date: 2026-11-26
 keyword: "can you put essential oils in a rain cloud humidifier"
 faq:

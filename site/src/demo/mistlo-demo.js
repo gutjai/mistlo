@@ -112,6 +112,7 @@ export function mountMistloDemo(host, options = {}) {
   let brightness = Object.hasOwn(levels, options.brightness) ? options.brightness : 'medium';
   let cycling = options.cycle === true;
   let sound = false;
+  let paused = false;
   const cycleInterval = Number.isFinite(options.cycleInterval) ? Math.max(2000, options.cycleInterval) : 8000;
   const canPlayAudio = window.AudioContext || window.webkitAudioContext;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -122,7 +123,7 @@ export function mountMistloDemo(host, options = {}) {
   root.innerHTML = `
     <div class="md-layout">
       <div class="md-scene">
-        <img class="md-photo" alt="Ivory Mistlo humidifier with a cloud-shaped top and a round water basin" width="1600" height="1600" loading="lazy" decoding="async">
+        <img class="md-photo" alt="Ivory Mistlo humidifier with a cloud-shaped top and a round water basin" width="1600" height="1600" loading="eager" fetchpriority="high" decoding="async">
         <div class="md-backdrop" aria-hidden="true"></div>
         <div class="md-lights" aria-hidden="true">
           <div class="md-basin"></div>
@@ -149,6 +150,7 @@ export function mountMistloDemo(host, options = {}) {
         ${radioGroup(id, 'brightness', 'Brightness', brightness, Object.entries(levels), label => `<span>${label}</span>`)}
         <div class="md-sound-row">
           <button class="md-toggle md-sound" type="button" aria-pressed="false"><span>Rain sound</span><span class="md-sound-state" aria-hidden="true">Off</span><span class="md-switch" aria-hidden="true"></span></button>
+          <button type="button" class="md-toggle md-pause">Pause animation</button>
           <span class="md-sr md-audio-status" role="status"></span>
         </div>
       </div>
@@ -161,6 +163,7 @@ export function mountMistloDemo(host, options = {}) {
   let canvasScale = 0;
   let mistSprite;
   const cloud = root.querySelector('.md-cloud');
+  const pauseButton = root.querySelector('.md-pause');
   const cycleButton = root.querySelector('.md-cycle');
   const soundButton = root.querySelector('.md-sound');
   const audioStatus = root.querySelector('.md-audio-status');
@@ -210,7 +213,7 @@ export function mountMistloDemo(host, options = {}) {
 
   function scheduleCycle() {
     clearTimeout(cycleTimer);
-    if (!cycling || !active) return;
+    if (!cycling || !active || paused || reducedMotion.matches) return;
     cycleTimer = setTimeout(() => {
       const next = (colorKeys.indexOf(color) + 1) % colorKeys.length;
       setColor(colorKeys[next], 'cycle');
@@ -412,7 +415,10 @@ export function mountMistloDemo(host, options = {}) {
   }
 
   function updateMotion() {
-    const still = reducedMotion.matches;
+    const still = paused || reducedMotion.matches;
+    root.toggleAttribute('data-motion-paused', still);
+    cycleButton.disabled = still;
+    pauseButton.hidden = reducedMotion.matches;
     cloud.disabled = still || !context || !photoReady;
     root.querySelector('.md-header p').hidden = cloud.disabled;
     if (still) {
@@ -462,6 +468,12 @@ export function mountMistloDemo(host, options = {}) {
     if (cycling && target.name === `color-${id}` && target.value === color) setCycle(false);
   }, { signal });
 
+  pauseButton.addEventListener('click', () => {
+    paused = !paused;
+    pauseButton.textContent = paused ? 'Resume animation' : 'Pause animation';
+    updateMotion();
+    scheduleCycle();
+  }, { signal });
   cycleButton.addEventListener('click', () => setCycle(!cycling), { signal });
   soundButton.disabled = !canPlayAudio;
   if (!canPlayAudio) soundButton.querySelector('.md-sound-state').textContent = 'Unavailable';
@@ -491,7 +503,10 @@ export function mountMistloDemo(host, options = {}) {
     pointerDrift = ((event.clientX - bounds.left) / bounds.width - 0.5) * 120;
   }, { signal, passive: true });
   scene.addEventListener('pointerleave', () => { pointerDrift = 0; }, { signal });
-  reducedMotion.addEventListener('change', updateMotion, { signal });
+  reducedMotion.addEventListener('change', () => {
+    updateMotion();
+    scheduleCycle();
+  }, { signal });
   photo.addEventListener('load', () => {
     photoReady = true;
     updateMotion();

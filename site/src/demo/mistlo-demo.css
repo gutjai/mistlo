@@ -222,7 +222,7 @@
 }
 
 .mistlo-demo .md-color-name { color: var(--md-muted); font-size: .82rem; }
-.mistlo-demo .md-sound-row { border-top: 1px solid var(--md-line); padding-top: 3px; }
+.mistlo-demo .md-sound-row { border-top: 1px solid var(--md-line); padding-top: 3px; flex-wrap: wrap; }
 .mistlo-demo .md-toggle {
   display: inline-flex;
   align-items: center;

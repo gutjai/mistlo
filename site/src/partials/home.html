@@ -4,7 +4,7 @@
     <div class="stage-copy">
       <h1 id="stage-title"><span class="h1-name">{{productName}} rain cloud humidifier &amp; night light</span><span class="h1-line">{{tagline}}</span></h1>
       {{heroDescription}}
-      <div class="hero-actions">{{buy:hero}}<a href="#how-it-works" class="text-link">See how it rains</a></div>
+      <div class="hero-actions">{{buy:hero}}<span class="rain-sticker">Rain included</span><a href="#how-it-works" class="text-link">See how it rains</a></div>
       <p class="micro">{{heroDetails}}</p>
     </div>
     <div class="stage-demo" data-mistlo-demo data-buy-context></div>
@@ -64,7 +64,7 @@
   </div>
 </section>
 
-<div class="sticky" aria-label="Product purchase bar" data-sticky>
+<div class="sticky is-hidden" inert aria-hidden="true" aria-label="Product purchase bar" data-sticky>
   <span class="sticky-swatch" aria-hidden="true"></span>
   <div><span>{{productName}}</span><small data-sticky-state>Warm Amber · Steady rain</small></div>
   {{buy:sticky}}

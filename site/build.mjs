@@ -119,33 +119,54 @@ const faqSchema = items => structured('FAQPage', { mainEntity: items.map(([quest
   structured('Question', { name: question, acceptedAnswer: structured('Answer', { text: answer.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') }) })
 )) });
 
-const revealCopy = revealPart.body ? renderText(revealPart.body, { minimumHeading: 1, headingId: 'reveal-title' }) : null;
-const revealMessage = revealCopy?.headings.some(heading => heading.level === 1)
-  ? revealCopy.html
-  : revealCopy
-    ? '<h1 id="reveal-title">Gotcha!</h1>' + revealCopy.html
-    : expand(await read(join(src, 'partials', 'reveal.html')), substitutions, h);
+const reactions = [
+  ['laughed', '😂', 'Laughed'],
+  ['annoyed', '😤', 'Annoyed'],
+  ['mind-blown', '🤯', 'Mind blown'],
+  ['respect', '👏', 'Respect']
+];
+const total = path => '<span data-total="' + path + '" hidden></span>';
+function reactionTiles(interactive) {
+  return '<ul class="reaction-grid">' + reactions.map(([key, emoji, label]) => {
+    const tile = '<span class="reaction-emoji" aria-hidden="true">' + emoji + '</span><span>' + label + '</span>' + total('react/' + key);
+    return '<li>' + (interactive
+      ? '<button type="button" class="reaction-tile" data-react="' + key + '" aria-pressed="false" disabled>' + tile + '</button>'
+      : '<div class="reaction-tile">' + tile + '</div>') + '</li>';
+  }).join('') + '</ul>';
+}
+const partyCounts = '<div class="party-counts"><p hidden>' + total('reveal-complete') + ' People fooled</p>' +
+  '<p hidden>' + total('share-click') + ' Share taps</p></div>';
+function shareControl(label, ref, shareText = '') {
+  return '<div class="share-control"><button class="button secondary" type="button" data-share="' + ref +
+    '" data-share-text="' + shareText + '" hidden>' + label + '</button><p class="share-status" role="status"></p>' +
+    '<p class="manual-share" hidden><a href="' + h(root) + '?ref=' + ref + '">Open the storefront to copy its link</a></p></div>';
+}
 const hasVideo = (await readdir(join(src, 'assets', 'reveal'))).includes('reveal.mp4');
 function reveal(directPage = false) {
   const d = revealPart.data;
+  const titleTag = directPage ? 'h1' : 'h2';
+  const sectionTag = directPage ? 'h2' : 'h3';
+  const offerTag = directPage ? 'h3' : 'h4';
   const t = key => h(editorial(String(d[key] || '')));
   const poster = h(root) + 'assets/reveal/face.jpg';
   const media = hasVideo
     ? '<video controls playsinline preload="none" poster="' + poster + '" aria-label="Reveal video from ' + h(ownerName) + '"><source src="' + h(root) + 'assets/reveal/reveal.mp4" type="video/mp4"></video>'
     : '<img src="' + poster + '" alt="Gavin, who built this store" width="800" height="800">';
-  const offer = n => '<article class="offer"><h3>' + t('offer' + n + 'Title') + '</h3><p>' + t('offer' + n + 'Text') + '</p><ul>' +
+  const offer = n => '<article class="offer"><' + offerTag + '>' + t('offer' + n + 'Title') + '</' + offerTag + '><p>' + t('offer' + n + 'Text') + '</p><ul>' +
     String(d['offer' + n + 'Items'] || '').split('|').filter(Boolean).map(item => '<li>' + h(editorial(item)) + '</li>').join('') + '</ul></article>';
   const shareText = h(editorial(String(d.shareWhatsApp || '').replace(/\s*\{\{siteUrl\}\}\s*/g, ' ').trim()));
   const contactHref = h(contact || root + 'about/');
   return '<div class="reveal-wrap">' +
     '<div class="reveal-layout"><div class="reveal-media">' + media + '</div><div class="reveal-copy">' +
-    '<h1 id="reveal-title">' + t('headline') + '</h1><p class="lede">' + t('line1') + '</p><p class="reveal-small">' + t('line2') + '</p></div></div>' +
-    '<section class="pitch" aria-labelledby="pitch-title"><h2 id="pitch-title">' + t('pitchHeadline') + '</h2><p class="pitch-intro">' + t('pitchIntro') + '</p>' +
+    '<' + titleTag + ' id="reveal-title">' + t('headline') + '</' + titleTag + '><p class="lede">' + t('line1') + '</p><p class="reveal-small">' + t('line2') + '</p></div></div>' +
+    '<section class="party" aria-labelledby="react-title"><' + sectionTag + ' id="react-title">How did we do?</' + sectionTag + '>' +
+    partyCounts + reactionTiles(true) + '<p class="reaction-status" role="status"></p>' +
+    '<div class="party-actions">' + shareControl(t('shareButton'), 'share', shareText) +
+    '<a class="button secondary" href="' + h(root) + 'fooled/">Visit the Wall of the Fooled</a></div></section>' +
+    '<section class="pitch" aria-labelledby="pitch-title"><' + sectionTag + ' id="pitch-title">' + t('pitchHeadline') + '</' + sectionTag + '><p class="pitch-intro">' + t('pitchIntro') + '</p>' +
     '<div class="offers">' + offer(1) + offer(2) + '</div>' +
     '<div class="reveal-actions"><a class="button primary-cta" href="' + contactHref + '"' + (contact ? ' data-portfolio rel="noopener" target="_blank"' : '') + '>' + t('contactButton') + '</a>' +
-    '<a class="button secondary" href="' + h(root) + 'about/">' + t('buildButton') + '</a>' +
-    '<button class="button secondary" type="button" data-share data-share-text="' + shareText + '" hidden>' + t('shareButton') + '</button></div>' +
-    '<p class="share-status" role="status"></p><p class="manual-share" hidden><a href="' + h(root) + '">Copy this link to share the store</a></p></section></div>';
+    '<a class="button secondary" href="' + h(root) + 'about/">' + t('buildButton') + '</a></div></section></div>';
 }
 
 const dialog = '<dialog aria-labelledby="reveal-title" id="reveal-dialog"><button type="button" class="button secondary dialog-close" data-close autofocus>Close <span aria-hidden="true">×</span></button>' +
@@ -154,6 +175,8 @@ const dialog = '<dialog aria-labelledby="reveal-title" id="reveal-dialog"><butto
 
 function pageHtml(route, page) {
   const canonical = abs(route);
+  const socialImage = page.image ? abs(page.image) : image;
+  const socialImageAlt = page.imageAlt ?? 'Mistlo rain cloud lamp glowing amber on a nightstand at night';
   const title = page.title.toLowerCase().includes(brandName.toLowerCase()) ? page.title : page.title + ' | ' + brandName;
   const socialKey = { '/': 'home', '/guides/': 'guides', '/gotcha/': 'reveal', '/about/': 'about' }[route];
   const socialTitle = route === '/' ? brandName + ' — ' + tagline : editorial(metadata.data[socialKey + 'OgTitle'] || title);
@@ -170,6 +193,7 @@ function pageHtml(route, page) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+${route === '/' ? '<link rel="preload" as="image" fetchpriority="high" href="' + h(root) + 'assets/photos/glow-studio.jpg">' : ''}
 <title>${h(title)}</title>
 <meta name="description" content="${h(page.description)}">
 <link rel="canonical" href="${h(canonical)}">
@@ -182,15 +206,15 @@ ${verification}
 <meta property="og:title" content="${h(socialTitle)}">
 <meta property="og:description" content="${h(socialDescription)}">
 <meta property="og:url" content="${h(canonical)}">
-<meta property="og:image" content="${h(image)}">
+<meta property="og:image" content="${h(socialImage)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Mistlo rain cloud lamp glowing amber on a nightstand at night">
+<meta property="og:image:alt" content="${h(socialImageAlt)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${h(socialTitle)}">
 <meta name="twitter:description" content="${h(socialDescription)}">
-<meta name="twitter:image" content="${h(image)}">
-<meta name="twitter:image:alt" content="Mistlo rain cloud lamp glowing amber on a nightstand at night">
+<meta name="twitter:image" content="${h(socialImage)}">
+<meta name="twitter:image:alt" content="${h(socialImageAlt)}">
 <script type="application/ld+json">${schema}</script>
 <style>${styles}</style>
 <script src="${h(root)}site.js" defer></script>
@@ -199,7 +223,7 @@ ${verification}
 <a href="#main" class="skip">Skip to content</a>
 <header><div class="head wrap">${logo}<nav aria-label="Main navigation"><a href="${h(root)}guides/">Guides</a><a href="${h(root)}faq/">FAQ</a>${page.buy ? buy('header', true) : '<a href="' + h(root) + '#product">Shop</a>'}</nav></div></header>
 <main class="wrap" id="main">${page.body}</main>
-<footer><div class="footer wrap">${logo}<nav aria-label="Footer navigation"><a href="${h(root)}guides/">Guides</a><a href="${h(root)}faq/">FAQ</a><a href="${h(root)}about/">About</a></nav>${page.disclose ? '<p class="disclosure">' + h(disclosure) + '</p>' : ''}</div></footer>
+<footer><div class="footer wrap">${logo}<nav aria-label="Footer navigation"><a href="${h(root)}guides/">Guides</a><a href="${h(root)}faq/">FAQ</a><a href="${h(root)}about/">About</a><a href="${h(root)}fooled/">Wall of the Fooled</a></nav>${page.disclose ? '<p class="disclosure">' + h(disclosure) + '</p>' : ''}</div></footer>
 ${page.buy ? dialog : ''}
 </body>
 </html>
@@ -263,10 +287,7 @@ routes.set('/', {
   description,
   body: home,
   buy: true,
-  schema: [structured('Product', {
-    name: productName, description, image: [abs('/assets/photos/pack-shot.jpg'), abs('/assets/photos/hero-night.jpg')],
-    brand: structured('Brand', { name: brandName }), url: abs('/')
-  }), faqSchema(homeFaq)]
+  schema: [faqSchema(homeFaq)]
 });
 
 const homeCrumb = ['Home', '/'];
@@ -300,6 +321,31 @@ routes.set('/faq/', {
   description: editorial(faqPart.data.description || 'Answers to common questions about {{productName}}, including setup, lighting, and care.'),
   body: section(breadcrumbs(faqCrumbs) + '<h1>Frequently asked questions</h1>' + (faqPart.body ? renderText(faqPart.body).html : '') + '<div class="accordion">' + faqHtml(fullFaq) + '</div>'),
   schema: [faqSchema(fullFaq), breadcrumbSchema(faqCrumbs)]
+});
+
+const clips = JSON.parse(await read(join(content, 'wall.json')));
+const clipCards = clips.map(({ platform, url, handle, caption }) => {
+  const link = new URL(url);
+  if (!['http:', 'https:'].includes(link.protocol) || link.username || link.password) {
+    throw new Error('Wall clips must link to public HTTP(S) URLs.');
+  }
+  return '<li><a href="' + h(link.href) + '"><span>' + h(platform) + ' · ' + h(handle) +
+    '</span><strong>' + h(caption) + '</strong></a></li>';
+});
+routes.set('/fooled/', {
+  title: 'Wall of the Fooled | Mistlo',
+  image: '/assets/photos/wall-og.jpg',
+  imageAlt: 'Wall of the Fooled and #MistloPrank above four emoji reactions',
+  description: 'See who fell for the Mistlo rain cloud, browse #MistloPrank reactions, and send the storefront to a friend.',
+  disclose: true,
+  body: '<section class="wall-page"><div class="party wall-hero"><p class="wall-tag">#MistloPrank</p>' +
+    '<h1>Wall of the Fooled</h1><p class="lede">A little rain cloud. A lot of double takes.</p>' + partyCounts +
+    reactionTiles(false) + '<div class="party-actions">' + shareControl('Try it on a friend', 'reel') +
+    '<noscript><a href="' + h(root) + '?ref=reel">Open the storefront to share it</a></noscript></div></div>' +
+    '<section class="wall-posts" aria-labelledby="wall-posts-title"><h2 id="wall-posts-title">Caught on camera</h2>' +
+    (clipCards.length ? '<ul class="wall-grid">' + clipCards.join('') + '</ul>'
+      : '<p class="wall-empty">Be the first: prank a friend, film it, tag <strong>#MistloPrank</strong>.</p>') +
+    '</section></section>'
 });
 
 routes.set('/gotcha/', {
@@ -353,6 +399,7 @@ for (const { file, data, body } of articleSources) {
     faq: normalizeFaq(data.faq ?? []),
     description: editorial(data.description),
     keyword: expand(data.keyword ?? '', substitutions),
+    related: String(data.related ?? '').split('|').filter(Boolean),
     author: expand(data.author ?? '', substitutions),
     path: '/guides/' + slug + '/',
     ...renderText(body)
@@ -384,10 +431,10 @@ for (const post of posts) {
     toc.map(({ id, label, level }) => '<li' + (level === 3 ? ' class="subheading"' : '') + '><a href="#' + encodeURIComponent(id) + '">' +
       h(label) + '</a></li>').join('') + '</ol></nav>' : '';
   const others = posts.filter(item => item !== post);
-  const sameTopic = others.filter(item => post.keyword && item.keyword.toLowerCase() === post.keyword.toLowerCase());
-  const related = [...new Set([...sameTopic, ...others])].slice(0, 3);
+  const curated = post.related.map(slug => others.find(item => item.path === '/guides/' + slug + '/'));
+  const related = [...new Set([...curated.filter(Boolean), ...others])].slice(0, 3);
   const relatedHtml = related.length ? '<aside><h2>Related guides</h2>' + postList(related) + '</aside>' :
-    '<aside><h2>Explore more</h2><p><a href="' + h(root) + 'blog/">Browse all guides</a></p></aside>';
+    '<aside><h2>Explore more</h2><p><a href="' + h(root) + 'guides/">Browse all guides</a></p></aside>';
   const articleFaq = post.faq.length ? '<section class="accordion"><h2>Frequently asked questions</h2>' + faqHtml(post.faq) + '</section>' : '';
   routes.set(post.path, {
     title: post.seoTitle || post.title,

@@ -3,6 +3,7 @@ title: "How to Clean a Rain Cloud Humidifier Step by Step"
 seoTitle: "How to Clean a Rain Cloud Humidifier (Prevent Mold)"
 description: "Step-by-step cleaning routine for rain cloud humidifiers: daily emptying, weekly white vinegar descaling, clearing tiny drip holes, and preventing slime."
 slug: how-to-clean-rain-cloud-humidifier
+related: rain-cloud-humidifier-not-dripping-fix|distilled-water-and-essential-oils|rain-cloud-vs-regular-humidifier
 date: 2026-11-26
 keyword: "how to clean a rain cloud humidifier"
 faq:
