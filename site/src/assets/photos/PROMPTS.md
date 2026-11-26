@@ -2,16 +2,29 @@
 
 ## Tooling, Model & Current Pass Status (v2 Realism Pass — 2026-11-26)
 
-- **Image generation tool/model**: Antigravity `generate_image` (`gemini-3.1-flash-image`).
+- **Image generation tool/model**: Antigravity `generate_image` (`gemini-3.1-flash-image`) via the `image-generator` subagent.
 - **Video generation tool (Part B)**: **Not available** in this environment (no Veo or other video-generation tool/MCP server is present; `ffmpeg` is installed, so compression/poster extraction would be possible once raw video exists, but video generation itself cannot be run here).
-- **Backup**: All original v1 images (`desk-day.jpg`, `evening-shelf.jpg`, `glow-studio.jpg`, `hero-night.jpg`, `in-the-box.jpg`, `og.jpg`, `pack-shot.jpg`, `rain-macro.jpg`) were copied intact into `photos/_v1/` before any overwrite.
-- **v2 Completion & Blocker**:
-  - **Completed**: `pack-shot.jpg` (1600×1600, ≤300 KB sRGB progressive JPEG, Lanczos-upscaled from 1024×1024 `gemini-3.1-flash-image` output, anchored on `_v1/pack-shot.jpg`). Adds realistic bead-blasted plastic micro-grain, hairline underside cloud seam, machined stem collar, curved water meniscus, stray rim droplets, organic coiled-memory USB-C cable bend with white strain-relief boot, and **4 subtle blank flush circular matte warm-ivory tactile buttons** centered low on the front edge of the frosted base.
-  - **Blocked by image-model quota**: After generating `pack-shot.jpg` v2, all 9 remaining v2 scene generations (`hero-night.jpg`, `desk-day.jpg`, `rain-macro.jpg`, `evening-shelf.jpg`, `glow-studio.jpg`, `hand-button.jpg`, `detail-stem.jpg`, `packaging.jpg`, `scale-hand.jpg`) immediately returned `429 RESOURCE_EXHAUSTED` / `QUOTA_EXHAUSTED` on `gemini-3.1-flash-image` (reported quota reset: `2026-11-26T03:27:02Z` / `13:27:02+10:00`). Accordingly, `hero-night.jpg`, `desk-day.jpg`, `rain-macro.jpg`, `evening-shelf.jpg`, `glow-studio.jpg`, and `og.jpg` currently remain their v1 files, and the 4 new files (`hand-button.jpg`, `detail-stem.jpg`, `packaging.jpg`, `scale-hand.jpg`) could not be generated yet.
+- **Backup**: All original v1 images (`desk-day.jpg`, `evening-shelf.jpg`, `glow-studio.jpg`, `hero-night.jpg`, `in-the-box.jpg`, `og.jpg`, `pack-shot.jpg`, `rain-macro.jpg`) remain untouched in `photos/_v1/`.
+- **v2 Completion & Blocker (Pass 2 — 2026-11-26 13:45+10:00)**:
+  - **Completed & LIVE (8 of 12 files — all existing site photos upgraded to v2)**:
+    - `pack-shot.jpg` (1600×1600, 238,800 B / 233.2 KiB) — canonical v2 product anchor.
+    - `glow-studio.jpg` (1600×1600, 272,579 B / 266.2 KiB) — anchored on BOTH `_v1/glow-studio.jpg` (framing lock) and `pack-shot.jpg` (v2 design/realism); verified ≤0.06% max bounding-box delta across cloud/underside/basin against `_v1/glow-studio.jpg` for the interactive canvas overlay.
+    - `hero-night.jpg` (2400×1350, 292,257 B / 285.4 KiB) — anchored on v2 `pack-shot.jpg`.
+    - `og.jpg` (1200×630, 210,268 B / 205.3 KiB) — bottom-weighted (`bias = 0.72`) 1.905:1 crop of v2 `hero-night.jpg`.
+    - `desk-day.jpg` (1600×1200, 292,414 B / 285.6 KiB) — anchored on v2 `pack-shot.jpg`.
+    - `rain-macro.jpg` (1200×1500, 289,276 B / 282.5 KiB) — generated 3:4 portrait, cropped (`v_bias = 0.58`) to 4:5 and Lanczos-upscaled to 1200×1500.
+    - `evening-shelf.jpg` (1600×1200, 286,920 B / 280.2 KiB) — anchored on v2 `pack-shot.jpg`.
+    - `in-the-box.jpg` (1600×1200, 292,996 B / 286.1 KiB) — anchored on v2 `pack-shot.jpg`, showing the 4 blank flush buttons on the frosted basin rim and 100% blank card.
+  - **Still Missing — Blocked by Image Quota (4 NEW shots)**:
+    - `hand-button.jpg` (1600×1200)
+    - `detail-stem.jpg` (1200×1500)
+    - `packaging.jpg` (1600×1200)
+    - `scale-hand.jpg` (1600×1200)
+    - All 4 returned `429 Too Many Requests / RESOURCE_EXHAUSTED` (`QUOTA_EXHAUSTED`) on `gemini-3.1-flash-image`. Reported quota reset timestamp: **`2026-11-26T08:27:02Z`** (**`18:27:02+10:00`** local time).
 
 ---
 
-## v2 Realism Pass — Completed Anchor
+## v2 Realism Pass — Final Prompts (Completed & LIVE)
 
 ### `pack-shot.jpg` (1600×1600 — v2 LIVE)
 
@@ -25,22 +38,59 @@
 > - Cable: Thin matte off-white USB-C power cable plugged into the back-right with a small white strain-relief collar, trailing rightward with realistic slight wave/memory bends from having been coiled.
 > - Camera & lighting: 35mm full-frame camera, 90mm f/5.6 macro lens, asymmetric diffused softbox from upper-left with gentle right fill bounce, subtle caustic light transmission and layered contact shadow on matte light-grey paper sweep with faint paper tooth, subtle organic film grain, LED OFF, no droplets/mist, strictly NO text/logos/icons/watermarks.
 
+### `glow-studio.jpg` (1600×1600 — v2 LIVE)
+
+- **Reference images**: `_v1/glow-studio.jpg` (primary framing/geometry lock) + `pack-shot.jpg` (v2 materials & 4 front buttons).
+- **Post-processing**: Lanczos 1024×1024 → 1600×1600, progressive sRGB JPEG (`q=90, subsampling=0`, 272,579 B).
+- **Alignment check**: Max delta 0.06% across cloud, underside LED strip, and basin bounds vs `_v1/glow-studio.jpg`; light pool RGB `[96.4, 96.1, 96.5]` (neutral white), top-left background RGB `[20.5, 20.5, 20.5]`.
+
+> Generate a photorealistic 1:1 square studio product photograph transforming `_v1/glow-studio.jpg` while matching the exact product design and materials of v2 `pack-shot.jpg`. Preserve the EXACT camera angle, product scale, silhouette, and pixel position of `_v1/glow-studio.jpg` (cloud underside spanning x ≈ 27%–76% at y ≈ 44%, basin water surface at y ≈ 67%, single stem at back-right, white USB-C cable exiting right). Keep the exact 3-puff bead-blasted matte warm-ivory ABS cloud with hairline underside seam, single brushed-champagne stem with machined collar, frosted polycarbonate basin with curved meniscus, stray rim droplets, and centered row of 4 blank flush circular matte warm-ivory buttons on the front edge, plus white USB-C cable with strain-relief boot. Underside LED glow is ON in PURE NEUTRAL WHITE (4800K–5000K, zero warm/cool cast for CSS tinting). Replace v1's uniform vertical bead strings with only 5–7 sparse, irregular, separate clear water droplets falling naturally with subtle ~1/125s vertical motion blur and organic ripples. Replace v1's smoke plume with barely visible ultra-subtle cool vapor haze. Real matte near-black studio paper sweep (#0C0D10-ish) with soft circular neutral white light pool and subtle rim kickers, 90mm f/4 macro lens, organic sensor grain, strictly NO text/logos/watermarks/props.
+
+### `hero-night.jpg` (2400×1350 — v2 LIVE) & `og.jpg` (1200×630 — v2 LIVE)
+
+- **Reference image**: v2 `pack-shot.jpg`.
+- **Post-processing**: `hero-night.jpg` Lanczos 1376×768 → 2400×1350 (`q=88, subsampling=2`, 292,257 B); `og.jpg` bottom-weighted (`v_bias=0.72`) 1.905:1 crop from raw v2 hero → 1200×630 (`q=96, subsampling=0`, 210,268 B).
+
+> Photorealistic 16:9 widescreen nighttime bedroom hero photograph anchored on v2 `pack-shot.jpg` (exact 3-puff bead-blasted matte warm-ivory cloud + hairline seam, single back-right brushed-champagne stem + collar, shallow frosted basin with 4 blank flush circular front buttons, white USB-C cable with strain-relief boot). Product in the RIGHT third on a real open-pore dark walnut nightstand at compact bedside scale, beside a simple half-full clear water glass and soft out-of-focus plain paperback book corner (zero legible text) on the far right. ENTIRE LEFT HALF is deep, dark, cool charcoal/blue-grey shadowed roller-stippled bedroom wall completely uncluttered for headline typography. Warm ~2400K amber underside LED glow with natural inverse-square falloff, 4–7 sparse irregular separate clear water droplets with subtle ~1/125s vertical motion blur, organic concentric ripples, tiny rim droplets, faint dust on wood, ultra-subtle barely visible vapor haze (NO cigarette-smoke plume). 35mm full-frame 50mm f/1.8 ISO 1600, shallow DOF, organic low-light grain, strictly NO text/logos/people.
+
+### `desk-day.jpg` (1600×1200 — v2 LIVE)
+
+- **Reference image**: v2 `pack-shot.jpg`.
+- **Post-processing**: Lanczos 1200×896 → 1600×1200 (`q=90, subsampling=0`, 292,414 B).
+
+> Photorealistic 4:3 morning window-daylight lifestyle photograph anchored on v2 `pack-shot.jpg` (exact 3-puff bead-blasted matte warm-ivory cloud + hairline seam, single back-right brushed-champagne stem + collar, frosted basin with 4 blank flush circular front buttons, white USB-C cable). LED completely OFF; 5–7 sparse irregular separate falling clear water droplets with subtle ~1/125s vertical motion blur, organic ripples, tiny rim droplets and faint mineral line, barely visible backlit diffuse vapor haze (NO smoke plume). Natural lived-in apartment light-oak desk beside softly wrinkled sheer off-white linen window curtains, handmade stoneware coffee mug, unbranded closed silver-aluminum laptop edge (no logo), woven oatmeal linen notebook, and imperfect potted houseplant in matte pot. 35mm full-frame 50mm f/2.0, shallow DOF, organic film grain, strictly NO text/logos/people.
+
+### `rain-macro.jpg` (1200×1500 — v2 LIVE)
+
+- **Reference image**: v2 `pack-shot.jpg`.
+- **Post-processing**: Generated at 3:4 portrait (896×1200), vertically cropped (`v_bias=0.58`) to 4:5 and Lanczos-upscaled to 1200×1500 (`q=91, subsampling=0`, 289,276 B).
+
+> Photorealistic vertical portrait macro close-up anchored on v2 `pack-shot.jpg` framing the ~10 cm open space between the matte warm-ivory bead-blasted 3-puff cloud underside (fine micro-grain plastic + hairline seam + pinhole outlets) and the frosted polycarbonate basin rim (tiny stray water beads, faint mineral line). Soft-bokeh single brushed-champagne stem with collar at back-right. Sparse irregular separate clear water droplets mid-fall plus 1–2 clinging droplets detaching from the underside, organic concentric ripples and small realistic rebounding micro-splash (no sculptural CGI crown, no rigid pearl-necklace chains). Soft warm ~2400K amber underside LED glow against dark-warm creamy bokeh, whisper-faint vapor haze (NO smoke tendrils), 90mm f/2.8 macro, organic film grain, strictly NO text/logos/people.
+
+### `evening-shelf.jpg` (1600×1200 — v2 LIVE)
+
+- **Reference image**: v2 `pack-shot.jpg`.
+- **Post-processing**: Lanczos 1200×896 → 1600×1200 (`q=90, subsampling=0`, 286,920 B).
+
+> Photorealistic 4:3 candid dusk/blue-hour living-room lifestyle photograph anchored on v2 `pack-shot.jpg` on a floating solid-oak shelf mounted on a textured warm-grey lime/plaster wall beside a cool deep-twilight window on the left. Exact 3-puff matte ivory cloud + hairline seam, single back-right champagne stem + collar, frosted basin with 4 blank flush front buttons, white USB-C cable tucked back-right. Muted realistic pastel lavender underside LED glow (not neon purple) with natural inverse-square falloff onto the plaster wall, sparse separate falling clear water droplets with subtle ~1/125s motion blur, delicate organic ripples, tiny rim droplets, ultra-subtle vapor haze (NO smoke plume). Styled on right with handmade speckled matte stoneware cup and worn blank cloth-bound hardcover books (zero text/letters). 50mm f/2.0, authentic high-ISO dusk grain, strictly NO text/logos/people.
+
+### `in-the-box.jpg` (1600×1200 — v2 LIVE)
+
+- **Reference image**: v2 `pack-shot.jpg`.
+- **Post-processing**: Lanczos 1200×896 → 1600×1200 (`q=71, subsampling=2`, 292,996 B).
+
+> Photorealistic 4:3 overhead 90-degree flat-lay knolling photograph anchored on v2 `pack-shot.jpg` on flat softly creased pale cool-grey woven natural linen. Disassembled Mistlo components: (1) blank matte warm-ivory bead-blasted 3-puff cumulus cloud top, (2) empty dry frosted warm-ivory polycarbonate basin showing both the rear-right stem socket and the subtle row of 4 blank flush circular buttons along the front rim edge, (3) ONE single slim brushed-champagne anodized aluminum support stem with machined collar, (4) neatly coiled matte off-white USB-C cable with white plugs, (5) solid round heather-grey wool felt coaster with NO center hole, (6) slender wooden cleaning brush with fine white bristles, (7) 100% BLANK crisp off-white heavyweight matte folded paper card (zero printed text, letters, numbers, icons, or logos). Soft directional overhead studio daylight, realistic contact shadows, 50mm f/5.6, organic grain, strictly NO text/logos/watermarks.
+
 ---
 
-## v2 Realism Pass — Prepared Prompts (Pending `gemini-3.1-flash-image` Quota Reset at `2026-11-26T03:27:02Z`)
+## v2 Realism Pass — Pending Prompts (Blocked Until Quota Reset at `2026-11-26T08:27:02Z` / `18:27:02+10:00`)
 
-All 9 shots below are designed to anchor directly on the v2 `pack-shot.jpg` (keeping the exact 3-puff matte ivory cloud, hairline seam, back-right brushed-champagne stem + collar, frosted basin with 4 blank flush front buttons, and white USB-C cable) while fixing v1 CGI artifacts (replacing cigarette-smoke plumes with near-invisible diffuse cool vapor, replacing uniform vertical bead strings with sparse irregular 1/125s motion-blurred droplets, and adding real-world lighting falloff, dust, water spots, mineral line, and lens character):
+All 4 remaining NEW shots anchor on v2 `pack-shot.jpg`:
 
-1. **`hero-night.jpg` (2400×1350, 16:9)** — Product in RIGHT third on open-pore dark walnut nightstand at night, LEFT half dark roller-stippled charcoal/blue-grey bedroom wall completely empty for headline text. Warm ~2400K amber underside glow, 4–7 sparse irregular falling droplets with subtle 1/125s motion blur, natural ripples, ultra-subtle cool vapor haze (NO cigarette-smoke plume), tiny water spots on rim, subtle dust on wood, imperfect cable curve, clear half-full water glass + blurred unreadable paperback corner on far right, 50mm f/1.8 ISO 1600 low-light film grain.
-2. **`desk-day.jpg` (1600×1200, 4:3)** — Natural apartment window morning daylight through softly wrinkled sheer linen curtains on light-oak desk. LED OFF, sparse irregular falling drops with 1/125s motion blur, subtle ripples, tiny water spots/mineral line, barely visible backlit vapor (NO smoke plume), lived-in unbranded props (used stoneware mug, closed logo-free aluminum laptop edge, plain linen notebook, imperfect potted plant), 50mm f/2.0 shallow DOF & grain.
-3. **`rain-macro.jpg` (1200×1500, 4:5)** — 90mm f/2.8 macro framing the ~10 cm gap between cloud underside (micro-grain plastic + hairline seam) and frosted basin rim (tiny water beads, faint mineral line). Only 5–8 sparse irregular droplets mid-fall with authentic 1/125s vertical motion blur + 1–2 clinging droplets detaching from tiny pinhole outlets, organic ripples/subtle micro-splash, warm amber backlight, whisper-faint vapor glow (NO smoke tendrils), subtle fingerprint on soft-bokeh champagne stem.
-4. **`evening-shelf.jpg` (1600×1200, 4:3)** — Candid dusk/blue-hour living-room floating oak shelf beside cool twilight window on left. Muted realistic pastel lavender underside LED glow with natural falloff onto textured plaster wall, sparse 1/125s motion-blurred drops, delicate ripples, NO smoke plume, imperfect handmade stoneware ceramics and worn blank cloth hardcover books (zero legible text), 50mm f/2.0 high-ISO grain.
-5. **`glow-studio.jpg` (1600×1600, 1:1)** — Real matte near-black studio sweep (#0C0D10-ish) with PURE NEUTRAL WHITE (4800K–5000K, zero warm/cool cast for CSS tinting) underside LED glow, 5–7 sparse irregular 1/125s droplets, organic ripples, whisper-faint vapor (NO smoke plume), soft neutral circular light pool on matte sweep, subtle studio rim kickers separating cloud silhouette, 90mm f/4 macro with subtle sensor grain.
-6. **`og.jpg` (1200×630)** — To be derived directly via bottom-weighted 1.905:1 crop from v2 `hero-night.jpg`.
-7. **`hand-button.jpg` (1600×1200, 4:3 — NEW)** — Close-up 50mm f/2.0 lifestyle shot in late-afternoon window light + warm amber LED glow: natural adult human hand (anatomically accurate 5 fingers, real skin texture/pores/cuticles) entering from lower-left with index finger pressing one of the 4 small blank flush circular buttons on the lower front edge of the frosted basin on a walnut nightstand.
-8. **`detail-stem.jpg` (1200×1500, 4:5 — NEW)** — 90mm f/3.2 macro from rear-right 3/4 angle showing brushed-champagne stem with faint fingerprint smudge seating into machined collar on frosted basin, clear water meniscus + stray rim droplets + faint mineral line, and matte white USB-C plug/strain-relief plugged into the recessed rear-right port with cable curving naturally across oak/walnut grain.
-9. **`packaging.jpg` (1600×1200, 4:3 — NEW)** — 35mm f/2.8 sunlit tabletop unboxing shot (~38° angle): plain completely unbranded raw recycled-kraft corrugated box (ZERO text/logos/labels/barcodes) flipped open on warm oak table, showing the Mistlo cloud, frosted basin (4 blank buttons), brushed-champagne stem, and paper-tied white USB-C cable nested in a fibrous raw grey-beige moulded paper-pulp tray.
-10. **`scale-hand.jpg` (1600×1200, 4:3 — NEW)** — 35mm f/2.8 candid morning window-light bedroom nightstand shot placing the Mistlo (~18 cm cloud / ~14 cm basin / ~22 cm tall) next to a standard ~15 cm black-glass smartphone (blank off screen with subtle reflection/smudge, no logos) and a handmade ~9.5 cm stoneware coffee mug on dark walnut wood with unmade oatmeal linen blurred behind.
+1. **`hand-button.jpg` (1600×1200, 4:3 — NEW, PENDING)** — Close-up 50mm f/2.0 lifestyle shot in warm late-afternoon window light + soft ~2400K amber LED glow: anatomically accurate natural adult human hand (5 normal fingers, real skin pores/knuckles/cuticles/unadorned nails) entering from lower-left foreground with index fingertip gently pressing one of the 4 small blank flush circular matte warm-ivory buttons centered low on the front edge of the frosted basin (remaining 3 buttons clearly visible in their horizontal row) on an open-pore dark walnut nightstand; 4–6 sparse motion-blurred droplets, tiny rim beads, no smoke, no text/icons.
+2. **`detail-stem.jpg` (1200×1500, 4:5 — NEW, PENDING)** — 90mm f/3.2 macro detail photograph from rear-right 3/4 angle in soft side window daylight (LED OFF): fine brushed-champagne anodized aluminum stem with subtle fingerprint sheen seating cleanly into its machined collar on the frosted basin, curved clear water meniscus + 3–4 stray rim droplets + faint mineral waterline, and matte white USB-C plug/strain-relief boot seated in the recessed rear-right port with off-white cable curving naturally across walnut/oak wood grain; no text/logos/specs.
+3. **`packaging.jpg` (1600×1200, 4:3 — NEW, PENDING)** — 35mm f/2.8 sunlit tabletop unboxing photograph (~38° angle) on warm solid oak: plain 100% UNBRANDED raw recycled-kraft corrugated tuck-top box flipped open (strictly ZERO text/logos/labels/barcodes/recycling icons anywhere) with fibrous raw grey-beige moulded paper-pulp protective tray holding the Mistlo 3-puff cloud, frosted basin (4 blank buttons visible), single brushed-champagne stem, and kraft-paper-tied white USB-C cable cleanly in custom molded cavities.
+4. **`scale-hand.jpg` (1600×1200, 4:3 — NEW, PENDING)** — 35mm f/2.8 candid bright morning window-light bedroom nightstand shot showing Mistlo (~22 cm tall, ~18 cm cloud, ~14 cm basin, 4 blank front buttons, LED OFF) on open-pore dark walnut directly beside a standard ~15 cm black-glass smartphone (blank off screen with subtle reflection/smudge, zero logos/UI) and a handmade ~9.5 cm matte stoneware coffee mug for accurate real-world scale, with softly rumpled oatmeal linen bedding blurred behind; no smoke, no text/logos.
 
 ---
 

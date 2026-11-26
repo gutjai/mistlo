@@ -10,8 +10,8 @@
 | 5a | Redesign: Gemini photoreal photos (8 shots, prompts in site/src/assets/photos/PROMPTS.md), new night/amber identity, glow picker | Gemini + Claude | ✅ live |
 | 5c | Redesign v3 "impact": research of award-winning interactive product sites | Gemini | ✅ `research/interactive-redesign.md`; hero = "Living Nightstand" (canvas rain + masked glow + opt-in sound), + day/night slider, sound lab, scroll anatomy, in-box hotspots + scale, state-synced buy pill, view transitions |
 | 5d | Realism pass on photos + AI video loops | Gemini | ⏸ pack-shot v2 done; other 9 shots blocked by Gemini image quota until 03:27 UTC (13:27 local). Auto-resume scheduled 13:35 local. No video tool available (ffmpeg present). |
-| 5e | Live interactive demo: real-time rain, light colors, mist, opt-in rain sound | Codex | 🔄 running |
-| 5f | Integrate research + assets + demo into v3, QA, deploy | Claude | ⏳ |
+| 5e | Live interactive demo: real-time rain, light colors, mist, opt-in rain sound | Codex | ✅ `site/src/demo/` |
+| 5f | v3 live: demo as hero, scroll-drawn anatomy, view transitions, buy bar mirrors choices; reveal = Gavin's AI marketing services + teaching pitch (LinkedIn CTA) | Claude | ✅ deployed; photo swap pending 5d |
 | 5b | GoatCounter code, Search Console + Bing verification, sitemap submit | Gavin + Claude | ⏳ |
 | 6 | Weekly results snapshot for portfolio | Claude | ⏳ |
 
