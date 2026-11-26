@@ -1,4 +1,4 @@
-const colors = {
+export const colors = {
   'warm-amber': ['Warm Amber', '#f3b467'],
   candle: ['Candle', '#ffcf8a'],
   'soft-white': ['Soft White', '#f4efe6'],
@@ -7,7 +7,7 @@ const colors = {
   'sea-glass': ['Sea Glass', '#8fd1c0'],
   'midnight-blue': ['Midnight Blue', '#5f7fd6'],
 };
-const modes = {
+export const modes = {
   drizzle: { label: 'Drizzle', rate: 6, speed: 0.85, volume: 0.12 },
   steady: { label: 'Steady', rate: 13, speed: 1, volume: 0.19 },
   pour: { label: 'Pour', rate: 23, speed: 1.18, volume: 0.26 },
@@ -33,7 +33,7 @@ function radioGroup(id, name, label, selected, entries, render) {
   </fieldset>`;
 }
 
-function createAudio(AudioContext) {
+export function createAudio(AudioContext) {
   const context = new AudioContext();
   const output = context.createGain();
   output.gain.value = 0;

@@ -1,60 +1,64 @@
 <link rel="stylesheet" href="{{root}}demo/mistlo-demo.css">
-<section class="stage full" id="product" aria-labelledby="stage-title">
-  <div class="stage-grid wrap">
-    <div class="stage-copy">
-      <h1 id="stage-title"><span class="h1-name">{{productName}} rain cloud humidifier &amp; night light</span><span class="h1-line">{{tagline}}</span></h1>
-      {{heroDescription}}
-      <div class="hero-actions">{{buy:hero}}<span class="rain-sticker">Rain included</span><a href="#how-it-works" class="text-link">See how it rains</a></div>
-      <p class="micro">{{heroDetails}}</p>
+<link rel="stylesheet" href="{{root}}demo/mistlo-stage.css">
+<section class="mistlo-story full" id="product" aria-labelledby="stage-title">
+  <div class="mistlo-visual" data-mistlo-stage>
+    <div class="mistlo-word" aria-hidden="true">MISTLO</div>
+    <img class="mistlo-poster" src="{{root}}assets/photos/glow-studio.jpg" width="1600" height="1600" fetchpriority="high" alt="Mistlo's ivory cloud rains into its round, illuminated basin">
+    <div class="mistlo-render"></div>
+  </div>
+  <div class="mistlo-hero stage">
+    <div class="mistlo-intro">
+      <h1 id="stage-title">Mistlo <span>rain cloud humidifier &amp; night light</span></h1>
+      <p>{{tagline}}</p>
     </div>
-    <div class="stage-demo" data-mistlo-demo data-buy-context></div>
-    <p class="stage-hint">Try it: pick a rain speed and a color, or tap the cloud.</p>
+    <span class="rain-sticker">Rain included</span>
+    <div class="mistlo-actions">{{buy:hero}}<a href="#how-it-works" class="text-link">See how it rains ↓</a></div>
+    <div class="mistlo-play" data-buy-context hidden>
+      <p class="mistlo-hint">Drag to spin · tap to change the glow</p>
+      <fieldset class="mistlo-glows"><legend>Glow colour</legend></fieldset>
+      <fieldset class="mistlo-rain"><legend>Rain speed</legend></fieldset>
+      <button class="mistlo-sound" type="button" aria-pressed="false">Rain sound</button>
+    </div>
+  </div>
+  <div class="mistlo-fallback wrap" data-buy-context hidden></div>
+  <div class="mistlo-chapters" id="how-it-works">
+    <article data-scene="colour"><div><h2>7 colours.</h2><p>From Warm Amber to Midnight Blue.</p></div></article>
+    <article data-scene="rain"><div><h2>3 kinds<br>of rain.</h2><p>Drizzle, Steady or Pour.</p></div></article>
+    <article data-scene="parts"><div><h2>300 ml.<br>All night.</h2><p>The cloud rains into its own basin and recirculates the water.</p></div></article>
+    <article data-scene="power"><div><h2>USB-C.<br>Quiet by design.</h2><p>Plug it in and settle in to the sound of falling water.</p></div></article>
   </div>
 </section>
 
-<section class="rows" aria-label="Product features">
+<section class="mistlo-gallery full" aria-label="Product features">
   {{features}}
 </section>
 
-<section class="anatomy" id="how-it-works" aria-labelledby="anatomy-title">
-  <div class="anatomy-sticky">
-    <figure class="anatomy-media">
-      <img loading="lazy" src="{{root}}assets/photos/pack-shot.jpg" width="1600" height="1600" alt="Mistlo in Warm Ivory on a pale grey background, showing the four buttons on the base">
-      <svg class="anatomy-path" viewBox="0 0 1600 1600" aria-hidden="true">
-        <path class="flow up" d="M1012 1075 L1012 705" />
-        <path class="flow across" d="M1012 700 C 900 690, 760 690, 640 694" />
-        <g class="flow drops">
-          <line x1="560" y1="720" x2="560" y2="1060" /><line x1="680" y1="720" x2="680" y2="1060" /><line x1="800" y1="720" x2="800" y2="1060" />
-        </g>
-        <circle class="node pump" cx="1012" cy="1110" r="16" />
-      </svg>
-    </figure>
-  </div>
-  <div class="anatomy-steps">
-    <h2 id="anatomy-title">{{storyTitle}}</h2>
+<section class="mistlo-details wrap">
+  <div class="mistlo-description">{{heroDescription}}<p>{{heroDetails}}</p></div>
+  <section class="mistlo-operation">
+    <h2>{{storyTitle}}</h2>
     {{storySteps}}
-  </div>
-</section>
+  </section>
+  <section class="box" id="in-the-box">
+    <div class="box-copy">
+      <h2>In the box</h2>
+      {{inBox}}
+      <p class="box-note">{{shipping}}</p>
+    </div>
+    <figure class="box-media"><img loading="lazy" src="{{root}}assets/photos/in-the-box.jpg" width="1600" height="1200" alt="Flat lay of Mistlo's cloud, stem, basin, USB-C cable, felt coaster, cleaning brush and care card"></figure>
+  </section>
 
-<section class="box" id="in-the-box">
-  <div class="box-copy">
-    <h2>In the box</h2>
-    {{inBox}}
-    <p class="box-note">{{shipping}}</p>
-  </div>
-  <figure class="box-media"><img loading="lazy" src="{{root}}assets/photos/in-the-box.jpg" width="1600" height="1200" alt="Flat lay of Mistlo's cloud, stem, basin, USB-C cable, felt coaster, cleaning brush and care card"></figure>
-</section>
+  <section class="specs" id="specs">
+    <h2>Specifications</h2>
+    <dl>{{specs}}</dl>
+  </section>
 
-<section class="specs" id="specs">
-  <h2>Specifications</h2>
-  <dl>{{specs}}</dl>
-</section>
+  {{guideLinks}}
 
-{{guideLinks}}
-
-<section class="home-faq" id="faq">
-  <div><h2>Questions, answered.</h2><a class="text-link" href="{{root}}faq/">All questions</a></div>
-  <div>{{faqs}}</div>
+  <section class="home-faq" id="faq">
+    <div><h2>Questions, answered.</h2><a class="text-link" href="{{root}}faq/">All questions</a></div>
+    <div>{{faqs}}</div>
+  </section>
 </section>
 
 <section class="closing full">
@@ -70,6 +74,16 @@
   {{buy:sticky}}
 </div>
 <script type="module">
-  import { mountAllMistloDemos } from '{{root}}demo/mistlo-demo.js';
-  mountAllMistloDemos();
+  const load = () => {
+    import('{{root}}demo/mistlo-stage.js').then(({ mountStage }) => mountStage()).catch(async () => {
+      const { mountMistloDemo } = await import('{{root}}demo/mistlo-demo.js');
+      const fallback = document.querySelector('.mistlo-fallback');
+      document.querySelector('.mistlo-story').classList.add('mistlo-static');
+      fallback.hidden = false;
+      mountMistloDemo(fallback);
+    });
+  };
+  requestAnimationFrame(() => requestAnimationFrame(() =>
+    'requestIdleCallback' in window ? requestIdleCallback(load, { timeout: 1000 }) : setTimeout(load, 0)
+  ));
 </script>

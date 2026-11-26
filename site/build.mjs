@@ -457,8 +457,9 @@ await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 await cp(join(src, 'assets'), join(dist, 'assets'), { recursive: true, filter: file => !file.endsWith('README.md') });
 await cp(join(src, 'site.js'), join(dist, 'site.js'));
+await cp(join(src, 'vendor'), join(dist, 'vendor'), { recursive: true });
 await mkdir(join(dist, 'demo'), { recursive: true });
-for (const file of ['mistlo-demo.js', 'mistlo-demo.css']) await cp(join(src, 'demo', file), join(dist, 'demo', file));
+for (const file of ['mistlo-demo.js', 'mistlo-demo.css', 'mistlo-stage.js', 'mistlo-stage.css']) await cp(join(src, 'demo', file), join(dist, 'demo', file));
 for (const [route, data] of routes) {
   const file = join(dist, route.slice(1), route.endsWith('/') ? 'index.html' : '');
   await mkdir(dirname(file), { recursive: true });
